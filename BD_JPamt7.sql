@@ -1,7 +1,7 @@
 drop database if exists db_JPamt7;
 
 create database	if not exists db_JPamt7
-CHARACTER SET utf8 COLLATE utf8mb4_general_ci;
+CHARACTER SET utf8 COLLATE utf8mb3_general_ci;
 
 use db_JPamt7;
 
@@ -61,7 +61,7 @@ create table ALBUM   (
 	Izenburua varchar(30) not null,
 	Urtea date not null,
 	Generoa varchar(30) not null,
-	IDMusikaria varchar(5) not null, 
+	IDMusikaria int not null, 
 	Constraint IdAlbum_pk1 Primary key (IdAlbum) ,
     Constraint IDMusikaria_fk1 foreign key(IDMusikaria) references MUSIKARIA (IDMusikaria)  ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -94,7 +94,7 @@ create table PLAYLIST    (
 
 create table PLAYLIST_ABESTIAK    (
 	IDList int, 
-	IdAudio char(5),
+	IdAudio int,
 	Constraint IDlist_IdAudio_pk1 Primary key (IDList,IdAudio),
     Constraint IDList_fk1 foreign key(IDList) references PLAYLIST (IDList) ON DELETE CASCADE ON UPDATE CASCADE,
     Constraint IdAudio_fk3 foreign key(IdAudio) references AUDIO (IdAudio) ON UPDATE CASCADE
@@ -109,7 +109,7 @@ create table GUSTUKOAK(
 );
 
 create table ERREPRODUKZIOAK(
-	IDBezeroa int,
+	IDBezeroa varchar(32),
 	IdAudio int,
     erreprodukzio_data date not null,
 	Constraint IDBezeroa_IdAudio_erreprodukzio_data_pk1 Primary key (IDBezeroa,IdAudio,erreprodukzio_data),
