@@ -1,5 +1,5 @@
 -- ALBUM
-INSERT INTO ALBUM (Izenburua, Urtea, Generoa, IDMusikaria) VALUES
+INSERT INTO album (Izenburua, Urtea, Generoa, IDMusikaria) VALUES
 ('El Mal Querer', '2018-11-02', 'Flamenco', '1'),
 ('Motomami', '2022-03-18', 'Flamenco', '1'),
 ('YHLQMDLG', '2020-02-29', 'Reggaeton', '2'),
@@ -21,13 +21,13 @@ INSERT INTO ALBUM (Izenburua, Urtea, Generoa, IDMusikaria) VALUES
 
 
 -- PODCAST
-INSERT INTO PODCAST (Kolaboratzaileak, IDPodcaster)
+INSERT INTO podcast (Kolaboratzaileak, IDPodcaster)
 VALUES
 ('Grefg', '1'),
 ('Alvaro845', '2');
 
 -- ABESTIA
-INSERT INTO ABESTIA (IdAudio, IdAlbum)
+INSERT INTO abestia (IdAudio, IdAlbum)
 VALUES
 ('1', '1'), 
 ('2', '1'), 
@@ -85,7 +85,7 @@ VALUES
 ('54', '18');
 
 -- PLAYLIST
-INSERT INTO PLAYLIST (Izenburua, Sorrera_data, IDBezeroa)
+INSERT INTO playlist (Izenburua, Sorrera_data, IDBezeroa)
 VALUES
 ('Playlist 1', '2023-04-01', 'juanperez&'),
 ('Playlist 2', '2023-05-10', 'mariagonzalez&'),
@@ -94,7 +94,7 @@ VALUES
 ('Playlist 5', '2023-09-15', 'davidmartinez&');
 
 -- PLAYLIST_ABESTIAK
-INSERT INTO PLAYLIST_ABESTIAK (IDList, IdAudio)
+INSERT INTO playlist_abestiak (IDList, IdAudio)
 VALUES
 (1, '40'),
 (1, '23'),
@@ -107,7 +107,7 @@ VALUES
 (5, '53');
 
 -- GUSTUKOAK
-INSERT INTO GUSTUKOAK (IDBezeroa, IdAudio)
+INSERT INTO gustukoak (IDBezeroa, IdAudio)
 VALUES
 ('juanperez&', '43'),
 ('juanperez&', '16'),
@@ -121,7 +121,7 @@ VALUES
 ('elenafdez&', '12');
 
 -- ERREPRODUKZIOA
-INSERT INTO ERREPRODUKZIOAK (IDBezeroa, IdAudio, erreprodukzio_data)
+INSERT INTO erreprodukzioak (IDBezeroa, IdAudio, erreprodukzio_data)
 VALUES
 ('juanperez&', '23', '2023-04-02'),
 ('mariagonzalez&', '50', '2023-05-12'),
