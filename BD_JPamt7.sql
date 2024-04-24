@@ -38,14 +38,14 @@ create table bezeroa   (
     Aktiboa boolean default true,
 	Mota enum("Premium", "Free") not null default ("Free"),
 	Constraint IDBezeroa_pk1 Primary key (IDBezeroa),
-    Constraint hizkuntza_fk1 foreign key(Hizkuntza) references HIZKUNTZA (IdHizkuntza) ON UPDATE CASCADE ON DELETE SET NULL
+    Constraint hizkuntza_fk1 foreign key(Hizkuntza) references hizkuntza (IdHizkuntza) ON UPDATE CASCADE ON DELETE SET NULL
 );
 
 create table premium (
 	IDBezeroa varchar(32),
 	Iraungitze_data date not null,
 	Constraint IDBezeroa_pk2 Primary key (IDBezeroa),
-    Constraint IDBezeroa_fk1 foreign key(IDBezeroa) references BEZEROA (IDBezeroa) ON DELETE CASCADE ON UPDATE CASCADE
+    Constraint IDBezeroa_fk1 foreign key(IDBezeroa) references bezeroa (IDBezeroa) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 create table audio  (
@@ -64,7 +64,7 @@ create table album   (
 	Generoa varchar(30) not null,
 	IDMusikaria int not null, 
 	Constraint IdAlbum_pk1 Primary key (IdAlbum) ,
-    Constraint IDMusikaria_fk1 foreign key(IDMusikaria) references MUSIKARIA (IDMusikaria)  ON DELETE CASCADE ON UPDATE CASCADE
+    Constraint IDMusikaria_fk1 foreign key(IDMusikaria) references musikaria (IDMusikaria)  ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 create table podcast  (
@@ -72,16 +72,16 @@ create table podcast  (
 	Kolaboratzaileak varchar(255),
 	IDPodcaster int not null, 
 	Constraint IdAudio_pk1 Primary key (IdAudio),
-    Constraint IdAudio_fk1 foreign key(IdAudio) references AUDIO (IdAudio) ON DELETE CASCADE ON UPDATE CASCADE,
-	Constraint IDPodcaster_fk1 foreign key(IDPodcaster) references PODCASTER (IDPodcaster) ON UPDATE CASCADE ON DELETE CASCADE
+    Constraint IdAudio_fk1 foreign key(IdAudio) references audio (IdAudio) ON DELETE CASCADE ON UPDATE CASCADE,
+	Constraint IDPodcaster_fk1 foreign key(IDPodcaster) references podcaster (IDPodcaster) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 create table abestia  (
 	IdAudio int,
 	IdAlbum int not null, 
 	Constraint IdAudio_Pk2 Primary key (IdAudio),
-    Constraint IdAudio_fk2 foreign key(IdAudio) references AUDIO (IdAudio) ON DELETE CASCADE ON UPDATE CASCADE,
-    Constraint IdAlbum_fk1 foreign key(IdAlbum) references ALBUM (IdAlbum)  ON DELETE CASCADE ON UPDATE CASCADE
+    Constraint IdAudio_fk2 foreign key(IdAudio) references audio (IdAudio) ON DELETE CASCADE ON UPDATE CASCADE,
+    Constraint IdAlbum_fk1 foreign key(IdAlbum) references album (IdAlbum)  ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 create table playlist    (
@@ -90,23 +90,23 @@ create table playlist    (
 	Sorrera_data date not null,
 	IDBezeroa varchar(32),
 	Constraint IDlist_pk1 Primary key (IDList),
-    Constraint IDBezeroa_fk2 foreign key(IDBezeroa) references BEZEROA (IDBezeroa) ON DELETE CASCADE ON UPDATE CASCADE
+    Constraint IDBezeroa_fk2 foreign key(IDBezeroa) references bezeroa (IDBezeroa) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 create table playlist_abestiak    (
 	IDList int, 
 	IdAudio int,
 	Constraint IDlist_IdAudio_pk1 Primary key (IDList,IdAudio),
-    Constraint IDList_fk1 foreign key(IDList) references PLAYLIST (IDList) ON DELETE CASCADE ON UPDATE CASCADE,
-    Constraint IdAudio_fk3 foreign key(IdAudio) references AUDIO (IdAudio) ON UPDATE CASCADE ON DELETE CASCADE
+    Constraint IDList_fk1 foreign key(IDList) references playlist (IDList) ON DELETE CASCADE ON UPDATE CASCADE,
+    Constraint IdAudio_fk3 foreign key(IdAudio) references audio (IdAudio) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 create table gustukoak(
 	IDBezeroa varchar(32),
 	IdAudio int,
 	Constraint IDBezeroa_IdAudio_pk1 Primary key (IDBezeroa,IdAudio),
-    Constraint IDBezeroa_fk3 foreign key(IDBezeroa) references BEZEROA (IDBezeroa) ON DELETE CASCADE ON UPDATE CASCADE,
-    Constraint IdAudio_fk4 foreign key(IdAudio) references AUDIO (IdAudio) ON UPDATE CASCADE ON DELETE CASCADE
+    Constraint IDBezeroa_fk3 foreign key(IDBezeroa) references bezeroa (IDBezeroa) ON DELETE CASCADE ON UPDATE CASCADE,
+    Constraint IdAudio_fk4 foreign key(IdAudio) references audio (IdAudio) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 create table erreprodukzioak(
@@ -114,14 +114,14 @@ create table erreprodukzioak(
 	IdAudio int,
     erreprodukzio_data date not null,
 	Constraint IDBezeroa_IdAudio_erreprodukzio_data_pk1 Primary key (IDBezeroa,IdAudio,erreprodukzio_data),
-    Constraint IDBezeroa_fk4 foreign key(IDBezeroa) references BEZEROA (IDBezeroa) ON UPDATE CASCADE,
-    Constraint IdAudio_fk5 foreign key(IdAudio) references AUDIO (IdAudio) ON UPDATE CASCADE
+    Constraint IDBezeroa_fk4 foreign key(IDBezeroa) references bezeroa (IDBezeroa) ON UPDATE CASCADE,
+    Constraint IdAudio_fk5 foreign key(IdAudio) references audio (IdAudio) ON UPDATE CASCADE
 );
 
 create table estatistikak(
 	IDAudio int,
 	Constraint IDAudio_pk3 Primary key (IDAudio),
-    Constraint IdAudio_fk6 foreign key(IdAudio) references AUDIO (IdAudio) ON UPDATE CASCADE
+    Constraint IdAudio_fk6 foreign key(IdAudio) references audio (IdAudio) ON UPDATE CASCADE
 );
 
 
