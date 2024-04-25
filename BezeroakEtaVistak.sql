@@ -28,8 +28,8 @@ SELECT count(bezeroa.IDBezeroa) as "Bezero Kopurua", count(premium.IDBezeroa) as
 	FROM bezeroa LEFT JOIN premium using(IDBezeroa);
 
 -- Baimenak
-REPAIR TABLE db_jpamt7;
-GRANT ALL PRIVILEGES ON *.* TO dbAdmin;
+-- REPAIR TABLE db_jpamt7;
+GRANT ALL PRIVILEGES ON db_jpamt7.* TO dbAdmin;
 
 GRANT SELECT, UPDATE ON db_jpamt7.audio to dbDepartBurua;
 GRANT SELECT, UPDATE ON db_jpamt7.musikaria to dbDepartBurua;
@@ -38,41 +38,42 @@ GRANT SELECT, UPDATE ON db_jpamt7.album to dbDepartBurua;
 GRANT SELECT ON db_jpamt7.podcaster to dbDepartBurua;
 GRANT SELECT ON db_jpamt7.bezeroa to dbDepartBurua;
 GRANT SELECT ON db_jpamt7.erreprodukzioak to dbDepartBurua;
-GRANT SELECT ON db_jpamt7.estatisktikak to dbDepartBurua;
+GRANT SELECT ON db_jpamt7.estatistikak to dbDepartBurua;
 
 -- Analisten baimenak
-GRANT SELECT ON db_jpamt7.musikaria to dbAnalista;
-GRANT SELECT ON db_jpamt7.audio to dbAnalista;
-GRANT SELECT ON db_jpamt7.podcaster to dbAnalista;
-GRANT SELECT ON db_jpamt7.podcast to dbAnalista;
-GRANT SELECT ON db_jpamt7.bezeroa to dbAnalista;
-GRANT SELECT ON db_jpamt7.album to dbAnalista;
-GRANT SELECT ON db_jpamt7.BezeroEtaPremiumKopurua to dbAnalista;
-GRANT SELECT ON db_jpamt7.erreprodukzioak to dbAnalista;
-GRANT SELECT ON db_jpamt7.estatisktikak to dbAnalista;
+GRANT SELECT ON db_jpamt7.* to dbAnalista;
 
 -- Langileen baimenak
+GRANT SELECT, UPDATE, INSERT ON db_jpamt7.abestia to dbLangileak;
+GRANT SELECT, UPDATE, INSERT ON db_jpamt7.bezeroa to dbLangileak;
+GRANT SELECT, UPDATE, INSERT ON db_jpamt7.premium to dbLangileak;
+GRANT SELECT, UPDATE, INSERT ON db_jpamt7.audio to dbLangileak;
 GRANT SELECT, UPDATE ON db_jpamt7.musikaria to dbLangileak;
 GRANT SELECT, UPDATE ON db_jpamt7.podcaster to dbLangileak;
 GRANT SELECT, UPDATE ON db_jpamt7.podcast to dbLangileak;
-GRANT SELECT, UPDATE ON db_jpamt7.audio to dbLangileak;
 GRANT SELECT, UPDATE ON db_jpamt7.album to dbLangileak;
-GRANT SELECT, UPDATE ON db_jpamt7.bezeroa to dbLangileak;
 GRANT SELECT ON db_jpamt7.AbestiInformazioa to dbLangileak;
 GRANT SELECT ON db_jpamt7.PodcastInformazioa to dbLangileak;
 GRANT SELECT ON db_jpamt7.erreprodukzioak to dbLangileak;
-GRANT SELECT ON db_jpamt7.estatisktikak to dbLangileak;
+GRANT SELECT ON db_jpamt7.estatistikak to dbLangileak;
 
 -- Bezeroen baimenak
-GRANT SELECT, INSERT ON db_jpamt7.gustukoak to dbBezeroa;
-GRANT SELECT, INSERT ON db_jpamt7.playlist to dbBezeroa;
-GRANT SELECT, INSERT ON db_jpamt7.playlist_abestiak to dbBezeroa;
+GRANT SELECT, INSERT, UPDATE, DELETE ON db_jpamt7.gustukoak to dbBezeroa;
+GRANT SELECT, INSERT, UPDATE, DELETE ON db_jpamt7.playlist to dbBezeroa;
+GRANT SELECT, INSERT, UPDATE, DELETE ON db_jpamt7.playlist_abestiak to dbBezeroa;
+GRANT SELECT, UPDATE, INSERT ON db_jpamt7.bezeroa to dbBezeroa;
+GRANT SELECT, UPDATE, INSERT ON db_jpamt7.premium to dbLangileak;
+GRANT SELECT ON db_jpamt7.podcast to dbBezeroa;
+GRANT SELECT ON db_jpamt7.podcaster to dbBezeroa;
+GRANT SELECT ON db_jpamt7.abestia to dbBezeroa;
+GRANT SELECT ON db_jpamt7.album to dbBezeroa;
+GRANT SELECT ON db_jpamt7.audio to dbBezeroa;
 GRANT SELECT ON db_jpamt7.AbestiInformazioa to dbBezeroa;
 GRANT SELECT ON db_jpamt7.PodcastInformazioa to dbBezeroa;
-GRANT INSERT ON db_jpamt7.bezeroa to dbBezeroa;
 
 -- Erabiltzaileak
 CREATE USER IF NOT EXISTS administrador@localhost IDENTIFIED BY "admin";
+CREATE USER IF NOT EXISTS bezeroAdmin@localhost IDENTIFIED BY "Y3Ll0w";
 CREATE USER IF NOT EXISTS eider@localhost IDENTIFIED BY "hoStiongrEl";
 CREATE USER IF NOT EXISTS jon@localhost IDENTIFIED BY "ArHelIblEiv";
 CREATE USER IF NOT EXISTS ane@localhost IDENTIFIED BY "ODenTantrAI";
@@ -84,5 +85,6 @@ GRANT dbDepartBurua TO eider@localhost;
 GRANT dbAnalista TO jon@localhost;
 GRANT dbAnalista TO ane@localhost;
 GRANT dbLangileak TO markel@localhost;
+GRANT dbBezeroa to bezeroAdmin@localhost;
 GRANT dbBezeroa TO aimar@localhost;
 
