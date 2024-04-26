@@ -1,7 +1,11 @@
 -- Erabiltzaileak, bere rolak eta bere baimenak
 
+<<<<<<< HEAD:BezeroakEtaVistak.sql
 use db_JPamt7;
 
+=======
+use db_jpamt7;
+>>>>>>> 84d437126ff84a61a6489082e6e482bc85062c64:lokala/BezeroakEtaVistak.sql
 -- Rolak
 CREATE ROLE IF NOT EXISTS dbAdmin, dbDepartBurua, dbAnalista, dbLangileak, dbBezeroa;
 
@@ -25,6 +29,7 @@ CREATE OR REPLACE VIEW BezeroEtaPremiumKopurua
 AS
 SELECT count(bezeroa.IDBezeroa) as "Bezero Kopurua", count(premium.IDBezeroa) as "Premium Kantitatea"
     FROM bezeroa LEFT JOIN premium using(IDBezeroa);
+<<<<<<< HEAD:BezeroakEtaVistak.sql
     
 -- Podcasterren izena eta eta zenbat ikusi dute podcasterra
 CREATE OR REPLACE VIEW musikaria_erreprodukzioak
@@ -47,6 +52,19 @@ where (p.IDPodcaster = es.IdAudio);
 GRANT ALL PRIVILEGES ON db_JPamt7.* TO 'dbAdmin'@'localhost';
 
 
+=======
+
+-- Baimenak
+-- Repair table index
+REPAIR TABLE mysql.tables_priv;
+REPAIR TABLE db;
+
+
+-- Grant privileges
+
+GRANT ALL PRIVILEGES ON db_jpamt7.* TO 'dbAdmin'@'localhost';
+
+>>>>>>> 84d437126ff84a61a6489082e6e482bc85062c64:lokala/BezeroakEtaVistak.sql
 
 GRANT SELECT, UPDATE ON db_jpamt7.audio to dbDepartBurua;
 GRANT SELECT, UPDATE ON db_jpamt7.musikaria to dbDepartBurua;
@@ -73,6 +91,8 @@ GRANT SELECT ON db_jpamt7.AbestiInformazioa to dbLangileak;
 GRANT SELECT ON db_jpamt7.PodcastInformazioa to dbLangileak;
 GRANT SELECT ON db_jpamt7.erreprodukzioak to dbLangileak;
 GRANT SELECT ON db_jpamt7.estatistikak to dbLangileak;
+
+select * from mysql.user;
 
 -- Bezeroen baimenak
 GRANT SELECT, INSERT, UPDATE, DELETE ON db_jpamt7.gustukoak to dbBezeroa;
@@ -103,4 +123,12 @@ GRANT dbAnalista TO jon@localhost;
 GRANT dbAnalista TO ane@localhost;
 GRANT dbLangileak TO markel@localhost;
 GRANT dbBezeroa to bezeroAdmin@localhost;
+<<<<<<< HEAD:BezeroakEtaVistak.sql
 GRANT dbBezeroa TO aimar@localhost;
+=======
+GRANT dbBezeroa TO aimar@localhost;
+
+select * from mysql.user;
+
+GRANT ALL privileges ON *.* TO administrador@localhost;
+>>>>>>> 84d437126ff84a61a6489082e6e482bc85062c64:lokala/BezeroakEtaVistak.sql
