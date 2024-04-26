@@ -1,6 +1,8 @@
 -- Erabiltzaileak, bere rolak eta bere baimenak
 
--- use db_jpamt7;
+use db_jpamt7;
+select * from mysql.user;
+
 
 -- Rolak
 CREATE ROLE IF NOT EXISTS dbAdmin, dbDepartBurua, dbAnalista, dbLangileak, dbBezeroa;
@@ -52,7 +54,7 @@ from (podcaster p join estatistikak es)
 where (p.IDPodcaster = es.IDAudio);
 
 -- Baimenak
-GRANT ALL PRIVILEGES ON *.* TO dbAdmin WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON db_JPamt7.* TO dbAdmin WITH GRANT OPTION;
 
 GRANT SELECT, UPDATE ON db_JPamt7.audio to dbDepartBurua WITH GRANT OPTION;
 GRANT SELECT, UPDATE ON db_JPamt7.musikaria to dbDepartBurua WITH GRANT OPTION;
