@@ -110,18 +110,22 @@ create table gustukoak(
 );
 
 create table erreprodukzioak(
+	IDerreprodukzioak int auto_increment,
 	IDBezeroa varchar(32),
 	IdAudio int,
     erreprodukzio_data date not null,
-	Primary key (IDBezeroa,IdAudio,erreprodukzio_data),
+	Primary key (IDerreprodukzioak),
     Constraint IDBezeroa_fk4 foreign key(IDBezeroa) references bezeroa (IDBezeroa) ON UPDATE CASCADE,
     Constraint IdAudio_fk5 foreign key(IdAudio) references audio (IdAudio) ON UPDATE CASCADE
 );
 
-create table estatistikak(
-	IDAudio int,
-	Primary key (IDAudio),
-    Constraint IdAudio_fk6 foreign key(IdAudio) references audio (IdAudio) ON UPDATE CASCADE
+CREATE TABLE estatistikak (
+    IDAudio INT AUTO_INCREMENT PRIMARY KEY,
+    Egunean INT DEFAULT 0,
+    Astean INT DEFAULT 0,
+    Hilean INT DEFAULT 0,
+    Urtean INT DEFAULT 0,
+    Totala INT DEFAULT 0
 );
 
 

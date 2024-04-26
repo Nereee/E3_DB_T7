@@ -1,7 +1,6 @@
-
 -- Erabiltzaileak, bere rolak eta bere baimenak
 
-use db_jpamt7;
+use db_JPamt7;
 
 -- Rolak
 CREATE ROLE IF NOT EXISTS dbAdmin, dbDepartBurua, dbAnalista, dbLangileak, dbBezeroa;
@@ -11,25 +10,43 @@ CREATE ROLE IF NOT EXISTS dbAdmin, dbDepartBurua, dbAnalista, dbLangileak, dbBez
 CREATE OR REPLACE VIEW AbestiInformazioa
 AS 
 SELECT audio.izena as "Abesti izena", album.izenburua as "Izenburua", musikaria.IzenArtistikoa as "Artista izena", audio.Iraupena as "Iraupena"
-	FROM abestia JOIN audio using (IdAudio)
-				JOIN album USING (IdAlbum)
+    FROM abestia JOIN audio using (IdAudio)
+                JOIN album USING (IdAlbum)
                 JOIN musikaria USING (IDMusikaria);
                 
 CREATE OR REPLACE VIEW PodcastInformazioa
 AS 
 SELECT audio.izena as "Izena", podcast.Kolaboratzaileak as "Kolaboratzaileak", podcaster.IzenArtistikoa as "Artista", audio.Iraupena as "Iraupena"
-	FROM podcast JOIN audio using (IdAudio)
+    FROM podcast JOIN audio using (IdAudio)
                 JOIN podcaster USING (IDPodcaster);
                 
 -- Zenbat bezero eta horietako zeinek PREMIUM ordaintzen dute 
 CREATE OR REPLACE VIEW BezeroEtaPremiumKopurua
 AS
 SELECT count(bezeroa.IDBezeroa) as "Bezero Kopurua", count(premium.IDBezeroa) as "Premium Kantitatea"
-	FROM bezeroa LEFT JOIN premium using(IDBezeroa);
+    FROM bezeroa LEFT JOIN premium using(IDBezeroa);
+    
+-- Podcasterren izena eta eta zenbat ikusi dute podcasterra
+CREATE OR REPLACE VIEW musikaria_erreprodukzioak
+AS 
+SELECT m.IzenArtistikoa AS IzenArtistikoa, es.Totala AS Totala
+from musikaria m join estatistikak es 
+where m.IDMusikaria = es.IdAudio;
+
+
+-- Musikariaren izena eta eta zenbat entzun dute bere abestiak
+CREATE OR REPLACE VIEW podcaster_erreprodukzioak
+AS 
+SELECT p.IzenArtistikoa AS IzenArtistikoa, es.Totala AS Totala
+from (podcaster p join estatistikak es) 
+where (p.IDPodcaster = es.IdAudio);
+
+
 
 -- Baimenak
--- REPAIR TABLE db_jpamt7;
-GRANT ALL PRIVILEGES ON db_jpamt7.* TO dbAdmin;
+GRANT ALL PRIVILEGES ON db_JPamt7.* TO 'dbAdmin'@'localhost';
+
+
 
 GRANT SELECT, UPDATE ON db_jpamt7.audio to dbDepartBurua;
 GRANT SELECT, UPDATE ON db_jpamt7.musikaria to dbDepartBurua;
@@ -87,4 +104,3 @@ GRANT dbAnalista TO ane@localhost;
 GRANT dbLangileak TO markel@localhost;
 GRANT dbBezeroa to bezeroAdmin@localhost;
 GRANT dbBezeroa TO aimar@localhost;
-
