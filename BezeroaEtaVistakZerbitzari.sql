@@ -53,6 +53,16 @@ SELECT p.IzenArtistikoa AS IzenArtistikoa, es.Totala AS Totala
 from (podcaster p join estatistikak es) 
 where (p.IDPodcaster = es.IDAudio);
 
+-- Playlist_abestia izena audio, artista eta album
+CREATE OR REPLACE VIEW playlits_abestien_informazioa AS
+SELECT pa.IDList, pl.Izenburua AS "Playlist izena", a.Izena AS "Abestia", m.IzenArtistikoa AS Musikaria, al.Izenburua AS Album
+FROM playlist_abestiak pa
+JOIN playlist pl using(IDList)
+JOIN abestia ab using(IdAudio)
+JOIN audio a using(IdAudio)
+JOIN album al using(IdAlbum)
+JOIN musikaria m using(IDMusikaria);
+
 -- Baimenak
 GRANT ALL PRIVILEGES ON db_JPamt7.* TO dbAdmin WITH GRANT OPTION;
 

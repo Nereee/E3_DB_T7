@@ -119,17 +119,56 @@ create table erreprodukzioak(
     Constraint IdAudio_fk5 foreign key(IdAudio) references audio (IdAudio) ON UPDATE CASCADE
 );
 
-CREATE TABLE estatistikak (
-    IDAudio INT AUTO_INCREMENT PRIMARY KEY,
-    Egunean INT DEFAULT 0,
-    Astean INT DEFAULT 0,
-    Hilean INT DEFAULT 0,
-    Urtean INT DEFAULT 0,
-    Totala INT DEFAULT 0
+
+CREATE TABLE estatistikakEgunero (
+    IDAudio int,
+    IDEstegunero int auto_increment,
+    GustokoAbestiak int,
+    GustokoPodcast int,
+    TopEntzundakoak int,
+	primary key(IDEstegunero),
+    foreign key (IDAudio) references audio (IdAudio)
 );
 
+CREATE TABLE estatistikakAstean (
+    IDAudio int,
+    IDEstastean int auto_increment,
+    GustokoAbestiak int,
+    GustokoPodcast int,
+    TopEntzundakoak int,
+	primary key(IDEstastean),
+    foreign key (IDAudio) references audio (IdAudio)
+);
 
+CREATE TABLE estatistikakHilabetean (
+    IDAudio int,
+    IDEsthilabetean int auto_increment,
+    GustokoAbestiak int,
+    GustokoPodcast int,
+    TopEntzundakoak int,
+    primary key (IDEsthilabetean),
+    foreign key (IDAudio) references audio (IdAudio)
+);
 
+CREATE TABLE estatistikakUrtean (
+    IDAudio int,
+    IDEsturtean int auto_increment,
+    GustokoAbestiak int,
+    GustokoPodcast int,
+    TopEntzundakoak int,
+    primary key (IDEsturtean),
+    foreign key (IDAudio) references audio (IdAudio)
+);
+
+CREATE TABLE estatistikakTotalak (
+    IDAudio int,
+    IDEsttotala int auto_increment,
+    GustokoAbestiak int,
+    GustokoPodcast int,
+    TopEntzundakoak int,
+    primary key (IDEsttotala),
+    foreign key (IDAudio) references audio (IdAudio)
+);
 
 
 
