@@ -68,93 +68,13 @@ INSERT INTO premium VALUES
 (v_IDBezeroa, date_add(curdate(),  interval 1 year));
 end;
 //
--- Erreprodukzio bat egitean estadistika gehitzea.
-DELIMITER //
-CREATE TRIGGER ErreprodukzioEstadistika
-AFTER INSERT ON erreprodukzioak
-for each row 
-begin
 
 
 
 
 
-end;
-//
 
 
-DELIMITER //
-
-CREATE TRIGGER update_estatistika_others AFTER UPDATE ON estatistikakEgunero
-FOR EACH ROW
-BEGIN
-    -- Variables para almacenar los valores anteriores
-    DECLARE old_GustokoAbestiak_astean INT;
-    DECLARE old_GustokoPodcast_astean INT;
-    DECLARE old_TopEntzundakoak_astean INT;
-    
-    DECLARE old_GustokoAbestiak_hilabetean INT;
-    DECLARE old_GustokoPodcast_hilabetean INT;
-    DECLARE old_TopEntzundakoak_hilabetean INT;
-    
-    DECLARE old_GustokoAbestiak_urtean INT;
-    DECLARE old_GustokoPodcast_urtean INT;
-    DECLARE old_TopEntzundakoak_urtean INT;
-    
-    DECLARE old_GustokoAbestiak_totalak INT;
-    DECLARE old_GustokoPodcast_totalak INT;
-    DECLARE old_TopEntzundakoak_totalak INT;
-    
-    -- Obtener los valores anteriores de cada tabla
-    SELECT GustokoAbestiak, GustokoPodcast, TopEntzundakoak
-    INTO old_GustokoAbestiak_astean, old_GustokoPodcast_astean, old_TopEntzundakoak_astean
-    FROM estatistikakAstean
-    WHERE IDAudio = NEW.IDAudio;
-    
-    SELECT GustokoAbestiak, GustokoPodcast, TopEntzundakoak
-    INTO old_GustokoAbestiak_hilabetean, old_GustokoPodcast_hilabetean, old_TopEntzundakoak_hilabetean
-    FROM estatistikakHilabetean
-    WHERE IDAudio = NEW.IDAudio;
-    
-    SELECT GustokoAbestiak, GustokoPodcast, TopEntzundakoak
-    INTO old_GustokoAbestiak_urtean, old_GustokoPodcast_urtean, old_TopEntzundakoak_urtean
-    FROM estatistikakUrtean
-    WHERE IDAudio = NEW.IDAudio;
-    
-    SELECT GustokoAbestiak, GustokoPodcast, TopEntzundakoak
-    INTO old_GustokoAbestiak_totalak, old_GustokoPodcast_totalak, old_TopEntzundakoak_totalak
-    FROM estatistikakTotalak
-    WHERE IDAudio = NEW.IDAudio;
-    
-    -- Actualizar estatistikakAstean sumando los nuevos valores
-    UPDATE estatistikakAstean
-    SET GustokoAbestiak = old_GustokoAbestiak_astean + NEW.GustokoAbestiak,
-        GustokoPodcast = old_GustokoPodcast_astean + NEW.GustokoPodcast,
-        TopEntzundakoak = old_TopEntzundakoak_astean + NEW.TopEntzundakoak
-    WHERE IDAudio = NEW.IDAudio;
-    
-    -- Actualizar estatistikakHilabetean
-    UPDATE estatistikakHilabetean
-    SET GustokoAbestiak = old_GustokoAbestiak_hilabetean + NEW.GustokoAbestiak,
-        GustokoPodcast = old_GustokoPodcast_hilabetean + NEW.GustokoPodcast,
-        TopEntzundakoak = old_TopEntzundakoak_hilabetean + NEW.TopEntzundakoak
-    WHERE IDAudio = NEW.IDAudio;
-    
-    -- Actualizar estatistikakUrtean
-    UPDATE estatistikakUrtean
-    SET GustokoAbestiak = old_GustokoAbestiak_urtean + NEW.GustokoAbestiak,
-        GustokoPodcast = old_GustokoPodcast_urtean + NEW.GustokoPodcast,
-        TopEntzundakoak = old_TopEntzundakoak_urtean + NEW.TopEntzundakoak
-    WHERE IDAudio = NEW.IDAudio;
-    
-    -- Actualizar estatistikakTotalak
-    UPDATE estatistikakTotalak
-    SET GustokoAbestiak = old_GustokoAbestiak_totalak + NEW.GustokoAbestiak,
-        GustokoPodcast = old_GustokoPodcast_totalak + NEW.GustokoPodcast,
-        TopEntzundakoak = old_TopEntzundakoak_totalak + NEW.TopEntzundakoak
-    WHERE IDAudio = NEW.IDAudio;
-END;
-//
 
 
 -- Bezeroa bere kontua desaktibatzean, premium tauletik kendu
