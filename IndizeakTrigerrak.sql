@@ -85,17 +85,21 @@ every 1 day starts current_timestamp()
 do
 begin
 	declare v_IraungitzeData date;
+	declare v_IDBezeroa varchar(32);
 	declare amaiera bool default 0;
-		declare c cursor for	
-			SELECT Iraungitze_data 
-			FROM premium
-			WHERE Iraungitze_data < date_sub(curdate(), interval 2 day);
+	declare c cursor for
+	
+	SELECT Iraungitze_data, IDBezeroa
+	FROM premium
+	WHERE Iraungitze_data < date_sub(curdate(), interval 2 day);
+    
 	declare continue handler for not found
 	set amaiera = 1;
     open c;
-        while amaiera = 0 do
-    fetch c into v_IraungitzeData;
-        select concat("Kontuz, zure premium kontua amaituko da: ", v_IraungitzeData, " egunetan, errenobatu edo amaitu") as Mezua;
+    
+	while amaiera = 0 do
+		fetch c into v_IraungitzeData, v_IDBezeroa;
+			insert into MezuaErabiltzaileak values (v_IDBezeroa, concat("Kontuz, zure premium kontua amaituko da: ", v_IraungitzeData, " egunetan, errenobatu edo amaitu"));
     end while;
     close c;
 
@@ -124,6 +128,7 @@ set amaiera = 1;
         while amaiera = 0 do
     fetch c into v_IDBezeroa;
         delete from premium where IDBezeroa = v_IDBezeroa;
+		delete from MezuaErabiltzaileak where IDBezeroa = v_IDBezeroa;
     end while;
     close c;
 
