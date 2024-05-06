@@ -21,12 +21,14 @@ create table podcaster (
 	Deskribapena varchar(1000) not null,
 	Primary key (IDPodcaster)
 );
+
 create table hizkuntza (
 	IdHizkuntza enum("ES","EU","EN","FR","DE","CA","GA","AR") not null,
 	Deskribapena varchar(100) not null,
 	Primary key (IdHizkuntza)
 );
-create table bezeroa   (
+
+create table bezeroa  (
 	IDBezeroa varchar(32),
 	Izena varchar(30) not null,
 	Abizena varchar(30) not null,
@@ -39,6 +41,14 @@ create table bezeroa   (
 	Mota enum("Premium", "Free") not null default ("Free"),
 	Primary key (IDBezeroa),
     Constraint hizkuntza_fk1 foreign key(Hizkuntza) references hizkuntza (IdHizkuntza) ON UPDATE CASCADE ON DELETE SET NULL
+);
+
+CREATE TABLE MezuaErabiltzaileak (
+	IDBezeroa varchar(32),
+	Mezua varchar(30),
+    
+	Primary key (IDBezeroa, Mezua),
+    Foreign key (IDBezeroa) references bezeroa (IDBezeroa)
 );
 
 create table premium (
@@ -169,6 +179,8 @@ CREATE TABLE estatistikakTotalak (
     primary key (IDEsttotala),
     foreign key (IDAudio) references audio (IdAudio)
 );
+
+
 
 
 

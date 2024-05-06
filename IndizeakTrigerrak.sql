@@ -1,39 +1,33 @@
 use db_JPamt7;
 
 -- Artista izena bilatzeko
-create index indx_musikariIzena on musikaria(IzenArtistikoa);
-create index indx_podcasterIzena on podcaster (IzenArtistikoa);
+CREATE INDEX indx_musikariIzena on musikaria(IzenArtistikoa);
+CREATE INDEX indx_podcasterIzena on podcaster (IzenArtistikoa);
 
 -- Musikaria eta podcaster albuma edo podcast bilaketa
-create index indx_musikariaalbuman on album (IDMusikaria);
-create index indx_podcasterpodcast on podcast (IDPodcaster);
+CREATE INDEX indx_musikariaalbuman ON album (IDMusikaria);
+CREATE INDEX indx_podcasterpodcast ON podcast (IDPodcaster);
 
 -- Artisten bere albuma edo podcast bilaketa
-create index indx_bezeroa on premium (IDBezeroa);
-create index indx_audio on podcast (IdAudio);
+CREATE INDEX indx_bezeroa ON premium (IDBezeroa);
+CREATE INDEX indx_audio ON podcast (IdAudio);
 
--- Índices para la vista musikaria_erreprodukzioak(faltan restantes)
-CREATE INDEX indx_astean_estatistika_audio ON estatistikak (IDAudio);
-
--- Índices para la vista podcaster_erreprodukzioak
-CREATE INDEX indx_podcaster_errepro_audio ON estatistikak (IDAudio);
-
--- playlist bilakera
+-- Playlist bilakera
 CREATE INDEX indx_playlist_audioa ON playlist (Izenburua);
 CREATE INDEX indx_playlist_audioa ON playlist_abestiak (id);
 
 -- Bezeroa bilatu erabiltzailearengatik
-create index indx_bezeroa_erabil on bezeroa(Erabiltzailea);
-create index indx_bezeroa_erabil on premium(Erabiltzailea);
+CREATE INDEX indx_bezeroa_erabil ON bezeroa(Erabiltzailea);
+CREATE INDEX indx_bezeroa_erabil ON premium(Erabiltzailea);
 
--- playlits abestien informazioa indizea
+-- Playlits abestien informazioa indizea
 CREATE INDEX idx_plalist_Izenburua ON playlist (Izenburua);
 CREATE INDEX idx_abestia_IdAudio ON abestia (IdAudio);
 CREATE INDEX idx_audio_izena ON audio (Izena);
 CREATE INDEX idx_album_izenburua ON album (izenburua);
 
 -- DROP INDIZEAK
-DROP INDEX indx_musikariIzena ON musikaria;
+/* DROP INDEX indx_musikariIzena ON musikaria;
 DROP INDEX indx_podcasterIzena ON podcaster;
 DROP INDEX indx_musikariaalbuman ON album;
 DROP INDEX indx_podcasterpodcast ON podcast;
@@ -48,7 +42,7 @@ DROP INDEX indx_bezeroa_erabil ON premium;
 DROP INDEX idx_plalist_Izenburua ON playlist;
 DROP INDEX idx_abestia_IdAudio ON abestia;
 DROP INDEX idx_audio_izena ON audio;
-DROP INDEX idx_album_izenburua ON album;
+DROP INDEX idx_album_izenburua ON album; */
 
 
 -- TRIGGERAK
@@ -68,14 +62,6 @@ INSERT INTO premium VALUES
 (v_IDBezeroa, date_add(curdate(),  interval 1 year));
 end;
 //
-
-
-
-
-
-
-
-
 
 -- Bezeroa bere kontua desaktibatzean, premium tauletik kendu
 DELIMITER //
