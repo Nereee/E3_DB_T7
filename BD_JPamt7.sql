@@ -129,7 +129,6 @@ create table erreprodukzioak(
     Constraint IdAudio_fk5 foreign key(IdAudio) references audio (IdAudio) ON UPDATE CASCADE
 );
 
-drop table estatistikakEgunero;
 CREATE TABLE estatistikakEgunero (
     IdAudio int,
     eguna date ,
@@ -179,6 +178,50 @@ CREATE TABLE estatistikakTotalak (
     primary key (IDEsttotala),
     foreign key (IDAudio) references audio (IdAudio)
 );
+
+
+-- ----------------------------------------------------------------------------------- Bistak -----------------------------------------------------------------------------------
+
+-- Podcast eta abestiaren datu interesgarriak irazkutzeko (izena, album izena, artista eta iraupena)
+CREATE OR REPLACE VIEW AbestiInformazioa
+AS 
+SELECT audio.izena AS "Abesti izena", album.izenburua AS "Izenburua", musikaria.IzenArtistikoa AS "Artista izena", audio.Iraupena AS "Iraupena"
+    FROM abestia JOIN audio using (IdAudio)
+                JOIN album USING (IdAlbum)
+                JOIN musikaria USING (IDMusikaria);
+
+
+CREATE OR REPLACE VIEW PodcastInformazioa
+AS 
+SELECT audio.izena as "Izena", podcast.Kolaboratzaileak AS "Kolaboratzaileak", podcaster.IzenArtistikoa AS "Artista", audio.Iraupena AS "Iraupena"
+    FROM podcast JOIN audio using (IdAudio)
+				 JOIN podcaster USING (IDPodcaster);
+			
+            
+-- Zenbat bezero eta horietako zeinek PREMIUM ordaintzen dute 
+CREATE OR REPLACE VIEW BezeroEtaPremiumKopurua
+AS
+SELECT count(bezeroa.IDBezeroa) AS "Bezero Kopurua", count(premium.IDBezeroa) AS "Premium Kantitatea"
+    FROM bezeroa LEFT JOIN premium using(IDBezeroa);
+   
+-- Musikariek zenbat erreproduzio TOTALAK dituzte.
+CREATE OR REPLACE VIEW musikaria_erreprodukzioak
+AS 
+SELECT m.IzenArtistikoa AS IzenArtistikoa, SUM(es.TopEntzundakoak) AS Totala
+	FROM musikaria m JOIN album a using (IDMusikaria)
+		JOIN abestia ab using (IdAlbum)
+        JOIN estatistikakTotalak es using (IDAudio)
+	GROUP BY 1;
+    
+-- Podcaster-ek zenbat erreproduzio TOTALAK dituzte.
+CREATE OR REPLACE VIEW podcaster_erreprodukzioak
+AS 
+SELECT p.IzenArtistikoa AS Podcaster, SUM(es.TopEntzundakoak) AS Totala
+	FROM podcaster p JOIN podcast pd using (IDPodcaster)
+        JOIN estatistikakTotalak es using (IDAudio)
+	GROUP BY 1; 
+    
+
 
 
 

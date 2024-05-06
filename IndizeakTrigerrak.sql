@@ -14,11 +14,10 @@ CREATE INDEX indx_audio ON podcast (IdAudio);
 
 -- Playlist bilakera
 CREATE INDEX indx_playlist_audioa ON playlist (Izenburua);
-CREATE INDEX indx_playlist_audioa ON playlist_abestiak (id);
+CREATE INDEX indx_playlist_audioa ON playlist_abestiak (IdAudio);
 
 -- Bezeroa bilatu erabiltzailearengatik
-CREATE INDEX indx_bezeroa_erabil ON bezeroa(Erabiltzailea);
-CREATE INDEX indx_bezeroa_erabil ON premium(Erabiltzailea);
+CREATE INDEX indx_bezeroa_erabil ON bezeroa (Erabiltzailea);
 
 -- Playlits abestien informazioa indizea
 CREATE INDEX idx_plalist_Izenburua ON playlist (Izenburua);
@@ -134,3 +133,203 @@ set amaiera = 1;
 
 end;
 $$
+
+-- ----------------------------------------------------------------------------------- Estatistikak erreprodukzioak -----------------------------------------------------------------------------------
+
+-- SHOW EVENTS;
+
+-- Erreprodukzio bat egitean EguneroEstatistika tauletan sartuko da.
+DELIMITER //
+CREATE TRIGGER estatistikakEguneroErreprodukzioa
+AFTER INSERT ON erreprodukzioak
+FOR EACH ROW
+BEGIN
+
+DECLARE audio_kop INT;
+    
+SELECT COUNT(*) INTO audio_kop 
+FROM estatistikakEgunero
+WHERE
+    IdAudio = NEW.IdAudio
+        AND eguna = DATE(NEW.erreprodukzio_data);
+    if audio_kop > 0 THEN   
+        UPDATE estatistikakEgunero
+        SET TopEntzundakoak = TopEntzundakoak + 1
+        WHERE IdAudio = NEW.IdAudio AND eguna = DATE(NEW.erreprodukzio_data);
+    else
+        insert into estatistikakEgunero (IdAudio, eguna, GustokoAbestiak, GustokoPodcast, TopEntzundakoak)
+        values (NEW.IdAudio, DATE(NEW.erreprodukzio_data), 0, 0, 1); 
+    END IF;
+END;
+// 
+
+-- Berdina, baina gustoko bat sartzekoan begiratuko du ea Podcast edo Abestia bada eta insert bat edo bestea egingo du.
+DELIMITER //
+-- Estatistikak gustukoak
+CREATE TRIGGER estatistikakEguneroGustukoak
+AFTER INSERT ON gustukoak
+FOR EACH ROW
+BEGIN
+
+DECLARE audio_kop INT;
+DECLARE v_mota enum('Podcasta','Abestia');
+
+-- Begiratu ea abesti edo podcast hori badago taulan.
+SELECT COUNT(*) INTO audio_kop
+FROM estatistikakEgunero 
+WHERE IdAudio = NEW.IdAudio;
+	
+-- Mota berrezkuratu.
+SELECT mota into v_mota
+FROM audio 
+WHERE IdAudio = NEW.IdAudio;
+
+	-- Audio hori badago, update egingo da. Podcast edo abestia bada egiaztatu egingo da.
+    IF audio_kop > 0 THEN   
+		IF v_mota = 'Abestia' THEN
+			UPDATE estatistikakEgunero
+			SET GustokoAbestiak = GustokoAbestiak + 1
+			WHERE IdAudio = NEW.IdAudio;
+		ELSE
+			UPDATE estatistikakEgunero
+			SET GustokoPodcast = GustokoPodcast + 1
+			WHERE IdAudio = NEW.IdAudio;
+        END IF;
+	-- Ez badago, insert bat egingo da.
+    ELSE
+		IF v_mota = 'Podcasta' THEN
+				insert into estatistikakEgunero (IdAudio, eguna, GustokoAbestiak, GustokoPodcast, TopEntzundakoak)
+				values (NEW.IdAudio, curdate(), 0, 1, 0); 
+		ELSE 
+				insert into estatistikakEgunero (IdAudio, eguna, GustokoAbestiak, GustokoPodcast, TopEntzundakoak)
+				values (NEW.IdAudio, curdate(), 1, 0, 0); 
+		END IF;
+    END IF;
+END;
+//
+
+-- Astean behin, datu osoak beteko dira.
+DELIMITER //
+-- estatistikakAstean tauletan txertatu.
+CREATE EVENT insert_estatistikakAstean
+ON SCHEDULE EVERY 1 WEEK
+-- STARTS 'YYYY-MM-DD 00:00:00'
+DO
+BEGIN
+    DECLARE lehen_date DATE;
+    DECLARE azken_date DATE;
+    
+    -- Astearen lehen eguna lortu (astelehena) eta gorde.
+    SET lehen_date = DATE_SUB(CURRENT_DATE(), INTERVAL WEEKDAY(CURRENT_DATE()) DAY);
+    
+    -- Astearen azken eguna lortu (igandea) eta gorde.
+    SET azken_date = DATE_ADD(lehen_date, INTERVAL 6 DAY);
+
+    -- estatistikakAstean tauletan datu itxitak sartu.
+    INSERT INTO estatistikakAstean (IdAudio, GustokoAbestiak, GustokoPodcast, TopEntzundakoak)
+    SELECT IdAudio, SUM(GustokoAbestiak), SUM(GustokoPodcast), SUM(TopEntzundakoak)
+    FROM estatistikakEgunero
+    WHERE eguna BETWEEN lehen_date AND azken_date
+    GROUP BY IdAudio;
+END;
+//
+
+-- Berdina baina hilabetea bukatzean, datu gustiak beteko dira.
+DELIMITER //
+-- estatistikakHilabetean tauletan txertatu.
+CREATE EVENT insert_estatistikakHilabetean
+ON SCHEDULE EVERY 1 MONTH
+-- STARTS 'YYYY-MM-01 00:00:00'
+DO
+BEGIN
+    DECLARE lehen_date DATE;
+    DECLARE azken_date DATE;
+    
+    -- Hilabetearen hasierako data lortu eta gorde.
+    SET lehen_date = DATE_FORMAT(CURRENT_DATE(), '%Y-%m-01');
+    
+    -- Hilabetearen azken data lortu eta gorde.
+    SET azken_date = LAST_DAY(lehen_data);
+
+    -- estatistikakHilabetean tauletan datuak sartu.
+    INSERT INTO estatistikakHilabetean (IdAudio, GustokoAbestiak, GustokoPodcast, TopEntzundakoak)
+    SELECT IdAudio, SUM(GustokoAbestiak), SUM(GustokoPodcast), SUM(TopEntzundakoak)
+    FROM estatistikakEgunero
+    WHERE eguna BETWEEN lehen_date AND azken_date
+    GROUP BY IdAudio;
+END;
+//
+
+-- Urtea amaitzerakoan, datu guztiak sartuko dira.
+DELIMITER //
+-- estatistikakUrtean tauletan txertatu.
+CREATE EVENT insert_estatistikakUrtean
+ON SCHEDULE EVERY 1 YEAR
+STARTS '2024-05-06 00:00:00'
+DO
+BEGIN
+    DECLARE lehen_date DATE;
+    DECLARE azken_date DATE;
+    
+    -- Urtearen hasierako data lortu eta gorde.
+    SET lehen_date = DATE_FORMAT(CURRENT_DATE(), '%Y-%m-%D');
+    
+    -- Urtearen azken data lortu eta gorde.
+    SET azken_date = DATE_FORMAT(CURRENT_DATE(), '%Y-%m-%D');
+
+    -- estatistikakUrtean tauletan datuak sartu.
+    INSERT INTO estatistikakUrtean (IdAudio, GustokoAbestiak, GustokoPodcast, TopEntzundakoak)
+    SELECT IdAudio, SUM(GustokoAbestiak), SUM(GustokoPodcast), SUM(TopEntzundakoak)
+    FROM estatistikakHilabetean
+    WHERE eguna BETWEEN lehen_date AND azken_date
+    GROUP BY IdAudio;
+END;
+//
+
+-- Egun bakoitzean, totala taula beteko da.
+DELIMITER //
+CREATE EVENT estadistikakTotala_insert
+ON SCHEDULE EVERY 1 DAY
+STARTS CURRENT_TIMESTAMP
+DO
+BEGIN
+    CALL estadistikakTotalaBete();
+END;
+//
+
+DELIMITER //
+CREATE PROCEDURE estadistikakTotalaBete()
+BEGIN
+    DECLARE id_exist INT;
+
+    -- Verificar si el IdAudio ya existe en la tabla estatistikakTotalak
+    SELECT COUNT(*) INTO id_exist
+    FROM estatistikakTotalak
+    WHERE IdAudio = (SELECT IdAudio FROM estatistikakEgunero WHERE eguna = CURDATE() LIMIT 1);
+
+    -- Si el IdAudio ya existe, realizar un UPDATE
+    IF id_exist > 0 THEN
+        UPDATE estatistikakTotalak t
+        JOIN (SELECT IdAudio, SUM(GustokoAbestiak) as GustokoAbestiak, SUM(GustokoPodcast) as GustokoPodcast, SUM(TopEntzundakoak) as TopEntzundakoak
+              FROM estatistikakEgunero
+              WHERE eguna = CURDATE()
+              GROUP BY IdAudio) e
+        ON t.IdAudio = e.IdAudio
+        SET t.GustokoAbestiak = t.GustokoAbestiak + e.GustokoAbestiak,
+            t.GustokoPodcast = t.GustokoPodcast + e.GustokoPodcast,
+            t.TopEntzundakoak = t.TopEntzundakoak + e.TopEntzundakoak;
+    
+    -- Si el IdAudio no existe, realizar un INSERT
+    ELSE
+        INSERT INTO estatistikakTotalak (IdAudio, GustokoAbestiak, GustokoPodcast, TopEntzundakoak)
+        SELECT IdAudio, SUM(GustokoAbestiak), SUM(GustokoPodcast), SUM(TopEntzundakoak)
+        FROM estatistikakEgunero
+        WHERE eguna = CURDATE()
+        GROUP BY IdAudio;
+    END IF;
+END;
+//
+
+
+
+

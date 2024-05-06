@@ -1,78 +1,10 @@
 -- Erabiltzaileak, bere rolak eta bere baimenak
 
 use db_jpamt7;
-select * from mysql.user;
-
+-- select * from mysql.user;
 
 -- Rolak
 CREATE ROLE IF NOT EXISTS dbAdmin, dbDepartBurua, dbAnalista, dbLangileak, dbBezeroa;
-
--- Bistak
--- Podcast eta abestiaren datu interesgarriak irazkutzeko (izena, album izena, artista eta iraupena)
-CREATE OR REPLACE VIEW AbestiInformazioa
-AS 
-SELECT audio.izena as "Abesti izena", album.izenburua as "Izenburua", musikaria.IzenArtistikoa as "Artista izena", audio.Iraupena as "Iraupena"
-    FROM abestia JOIN audio using (IdAudio)
-                JOIN album USING (IdAlbum)
-                JOIN musikaria USING (IDMusikaria);
-                
-CREATE OR REPLACE VIEW PodcastInformazioa
-AS 
-SELECT audio.izena as "Izena", podcast.Kolaboratzaileak as "Kolaboratzaileak", podcaster.IzenArtistikoa as "Artista", audio.Iraupena as "Iraupena"
-    FROM podcast JOIN audio using (IdAudio)
-                JOIN podcaster USING (IDPodcaster);
-                
--- Zenbat bezero eta horietako zeinek PREMIUM ordaintzen dute 
-CREATE OR REPLACE VIEW BezeroEtaPremiumKopurua
-AS
-SELECT count(bezeroa.IDBezeroa) as "Bezero Kopurua", count(premium.IDBezeroa) as "Premium Kantitatea"
-    FROM bezeroa LEFT JOIN premium using(IDBezeroa);
-    
-CREATE OR REPLACE VIEW musikaria_erreprodukzioak
-AS select m.IzenArtistikoa AS IzenArtistikoa,es.Totala AS Totala
-from (musikaria m join estatistikak es) 
-where (m.IDMusikaria = es.IDAudio);
-
-CREATE OR REPLACE VIEW podcaster_erreprodukzioak
-AS 
-SELECT p.IzenArtistikoa AS IzenArtistikoa,es.Totala AS Totala
-from (podcaster p join estatistikak es) 
-where (p.IDPodcaster = es.IDAudio);
-
--- Podcasterren izena eta eta zenbat ikusi dute podcasterra
-CREATE OR REPLACE VIEW musikaria_erreprodukzioak
-AS 
-SELECT p.IzenArtistikoa AS IzenArtistikoa,es.Totala AS Totala
-from (podcaster p join estatistikak es) 
-where (p.IDPodcaster = es.IDAudio);
-
--- Musikariaren izena eta eta zenbat entzun dute bere abestiak
-CREATE OR REPLACE VIEW musikaria_erreprodukzioak
-AS 
-SELECT p.IzenArtistikoa AS IzenArtistikoa, es.Totala AS Totala
-from (podcaster p join estatistikak es) 
-where (p.IDPodcaster = es.IDAudio);
-
--- Playlist_abestia izena audio, artista eta album
-CREATE OR REPLACE VIEW playlits_abestien_informazioa AS
-    SELECT 
-        pa.IDList,
-        pl.Izenburua AS 'Playlist izena',
-        a.Izena AS 'Abestia',
-        m.IzenArtistikoa AS Musikaria,
-        al.Izenburua AS Album
-    FROM
-        playlist_abestiak pa
-            JOIN
-        playlist pl USING (IDList)
-            JOIN
-        abestia ab USING (IdAudio)
-            JOIN
-        audio a USING (IdAudio)
-            JOIN
-        album al USING (IdAlbum)
-            JOIN
-        musikaria m USING (IDMusikaria);
 
 -- Baimenak
 GRANT ALL PRIVILEGES ON db_JPamt7.* TO dbAdmin WITH GRANT OPTION;
