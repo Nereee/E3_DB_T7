@@ -216,14 +216,18 @@ SELECT m.IzenArtistikoa AS IzenArtistikoa, SUM(es.TopEntzundakoak) AS Totala
 -- Podcaster-ek zenbat erreproduzio TOTALAK dituzte.
 CREATE OR REPLACE VIEW podcaster_erreprodukzioak
 AS 
-SELECT p.IzenArtistikoa AS Podcaster, SUM(es.TopEntzundakoak) AS Totala
+SELECT IzenArtistikoa AS Podcaster, SUM(es.TopEntzundakoak) AS Totala
 	FROM podcaster p JOIN podcast pd using (IDPodcaster)
         JOIN estatistikakTotalak es using (IDAudio)
 	GROUP BY 1; 
-    
 
-
-
+-- 
+CREATE OR REPLACE VIEW musikari_abestiak
+AS
+	SELECT IdAudio, Izena, Iraupena, count(IdAudio) 
+		FROM audio a JOIN abestia USING (IdAudio) 
+			JOIN album USING (IdAlbum) 
+	GROUP BY 1,2,3;
 
 
 
