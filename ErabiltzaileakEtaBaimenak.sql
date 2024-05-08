@@ -52,16 +52,16 @@ GRANT SELECT ON db_JPamt7.PodcastInformazioa to dbBezeroa WITH GRANT OPTION;
 -- Erabiltzaileak
 CREATE USER IF NOT EXISTS "administrador"@"10.5.6.223" IDENTIFIED BY "admin";
 CREATE USER IF NOT EXISTS "bezeroAdmin"@"10.5.6.223" IDENTIFIED BY "Y3Ll0w";
-CREATE USER IF NOT EXISTS "eider"@"10.5.6.223" IDENTIFIED BY "hoStiongrEl";
-CREATE USER IF NOT EXISTS "jon"@"10.5.6.223" IDENTIFIED BY "ArHelIblEiv";
-CREATE USER IF NOT EXISTS "ane"@"10.5.6.223" IDENTIFIED BY "ODenTantrAI";
+CREATE USER IF NOT EXISTS "leire"@"10.5.6.223" IDENTIFIED BY "hoStiongrEl";
+CREATE USER IF NOT EXISTS "unai"@"10.5.6.223" IDENTIFIED BY "ArHelIblEiv";
+CREATE USER IF NOT EXISTS "irati"@"10.5.6.223" IDENTIFIED BY "ODenTantrAI";
 CREATE USER IF NOT EXISTS "markel"@"10.5.6.223" IDENTIFIED BY "aMPEnIDsUrn";
-CREATE USER IF NOT EXISTS "aimar"@"10.5.6.223" IDENTIFIED BY "ORANGE";
+CREATE USER IF NOT EXISTS "julen"@"10.5.6.223" IDENTIFIED BY "ORANGE";
 
 GRANT dbAdmin TO "administrador"@"10.5.6.223";
-GRANT dbDepartBurua TO "eider"@"10.5.6.223";
-GRANT dbAnalista TO "jon"@"10.5.6.223";
-GRANT dbAnalista TO "ane"@"10.5.6.223";
-GRANT dbLangileak TO "markel"@"10.5.6.223";
+GRANT dbDepartBurua TO "leire"@"10.5.6.223";
+GRANT dbAnalista TO "unai"@"10.5.6.223";
+GRANT dbAnalista TO "markel"@"10.5.6.223";
+GRANT dbLangileak TO "irati"@"10.5.6.223";
 GRANT dbBezeroa to "bezeroAdmin"@"10.5.6.223";
-GRANT dbBezeroa TO "aimar"@"10.5.6.223";
+GRANT dbBezeroa TO "julen"@"10.5.6.223";

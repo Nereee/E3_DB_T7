@@ -13,14 +13,13 @@ CREATE INDEX indx_bezeroa ON premium (IDBezeroa);
 CREATE INDEX indx_audio ON podcast (IdAudio);
 
 -- Playlist bilakera
-CREATE INDEX indx_playlist_audioa ON playlist (Izenburua);
+CREATE INDEX idx_plalist_Izenburua ON playlist (Izenburua);
 CREATE INDEX indx_playlist_audioa ON playlist_abestiak (IdAudio);
 
 -- Bezeroa bilatu erabiltzailearengatik
 CREATE INDEX indx_bezeroa_erabil ON bezeroa (Erabiltzailea);
 
 -- Playlits abestien informazioa indizea
-CREATE INDEX idx_plalist_Izenburua ON playlist (Izenburua);
 CREATE INDEX idx_abestia_IdAudio ON abestia (IdAudio);
 CREATE INDEX idx_audio_izena ON audio (Izena);
 CREATE INDEX idx_album_izenburua ON album (izenburua);
@@ -46,7 +45,6 @@ DROP INDEX idx_album_izenburua ON album; */
 
 -- TRIGGERAK
 -- Premium erabiltzaile bat sortzean, automatikoki premium taulan sartuko da.
-
 DELIMITER //
 CREATE TRIGGER PremiumTaulaBete
 AFTER INSERT ON bezeroa
@@ -55,7 +53,7 @@ begin
 	declare v_IDBezeroa varchar(32);
 		SELECT IDBezeroa into v_IDBezeroa
 		from bezeroa
-		where IDBezeroa = NEW.IDBezeroa AND mota = "premium";
+		where IDBezeroa = NEW.IDBezeroa AND mota = "Premium";
 
 INSERT INTO premium VALUES 
 (v_IDBezeroa, date_add(curdate(),  interval 1 year));
@@ -302,12 +300,10 @@ CREATE PROCEDURE estadistikakTotalaBete()
 BEGIN
     DECLARE id_exist INT;
 
-    -- Verificar si el IdAudio ya existe en la tabla estatistikakTotalak
     SELECT COUNT(*) INTO id_exist
     FROM estatistikakTotalak
     WHERE IdAudio = (SELECT IdAudio FROM estatistikakEgunero WHERE eguna = CURDATE() LIMIT 1);
 
-    -- Si el IdAudio ya existe, realizar un UPDATE
     IF id_exist > 0 THEN
         UPDATE estatistikakTotalak t
         JOIN (SELECT IdAudio, SUM(GustokoAbestiak) as GustokoAbestiak, SUM(GustokoPodcast) as GustokoPodcast, SUM(TopEntzundakoak) as TopEntzundakoak
