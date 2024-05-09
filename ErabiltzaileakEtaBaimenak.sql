@@ -1,7 +1,7 @@
 -- Erabiltzaileak, bere rolak eta bere baimenak
 
-use db_jpamt7;
--- select * from mysql.user;
+USE db_JPamt7;
+select * from mysql.user;
 
 -- Rolak
 CREATE ROLE IF NOT EXISTS dbAdmin, dbDepartBurua, dbAnalista, dbLangileak, dbBezeroa;

@@ -1,49 +1,27 @@
 use db_JPamt7;
 
--- Artista izena bilatzeko
+-- Artista bere izena bidez bilatu.
 CREATE INDEX indx_musikariIzena on musikaria(IzenArtistikoa);
 CREATE INDEX indx_podcasterIzena on podcaster (IzenArtistikoa);
 
--- Musikaria eta podcaster albuma edo podcast bilaketa
+-- Artisten id bidez albuma edo podcast bilatu.
 CREATE INDEX indx_musikariaalbuman ON album (IDMusikaria);
 CREATE INDEX indx_podcasterpodcast ON podcast (IDPodcaster);
 
--- Artisten bere albuma edo podcast bilaketa
-CREATE INDEX indx_bezeroa ON premium (IDBezeroa);
+-- Erabiltze izen bidez bezeroa bilatu.
+CREATE INDEX indx_bezeroa ON bezeroa (Erabiltzailea);
+
+-- IdAudio bidez podcast eta abestia bilatu.
 CREATE INDEX indx_audio ON podcast (IdAudio);
 
--- Playlist bilakera
+-- IdAudio bidez album-a bilatu.
+CREATE INDEX indx_albumAudio ON album (IdAudio);
+
+-- Playlist izen eta idAudio bidez bilatu.
 CREATE INDEX idx_plalist_Izenburua ON playlist (Izenburua);
 CREATE INDEX indx_playlist_audioa ON playlist_abestiak (IdAudio);
 
--- Bezeroa bilatu erabiltzailearengatik
-CREATE INDEX indx_bezeroa_erabil ON bezeroa (Erabiltzailea);
-
--- Playlits abestien informazioa indizea
-CREATE INDEX idx_abestia_IdAudio ON abestia (IdAudio);
-CREATE INDEX idx_audio_izena ON audio (Izena);
-CREATE INDEX idx_album_izenburua ON album (izenburua);
-
--- DROP INDIZEAK
-/* DROP INDEX indx_musikariIzena ON musikaria;
-DROP INDEX indx_podcasterIzena ON podcaster;
-DROP INDEX indx_musikariaalbuman ON album;
-DROP INDEX indx_podcasterpodcast ON podcast;
-DROP INDEX indx_bezeroa ON premium;
-DROP INDEX indx_audio ON podcast;
-DROP INDEX indx_astean_estatistika_audio ON estatistikak;
-DROP INDEX indx_podcaster_errepro_audio ON estatistikak;
-DROP INDEX indx_playlist_audioa ON playlist;
-DROP INDEX indx_playlist_audioa ON playlist_abestiak;
-DROP INDEX indx_bezeroa_erabil ON bezeroa;
-DROP INDEX indx_bezeroa_erabil ON premium;
-DROP INDEX idx_plalist_Izenburua ON playlist;
-DROP INDEX idx_abestia_IdAudio ON abestia;
-DROP INDEX idx_audio_izena ON audio;
-DROP INDEX idx_album_izenburua ON album; */
-
-
--- TRIGGERAK
+-- ----------------------------------------------------------------------------------- Premium trigger-ak -----------------------------------------------------------------------------------
 -- Premium erabiltzaile bat sortzean, automatikoki premium taulan sartuko da.
 DELIMITER //
 CREATE TRIGGER PremiumTaulaBete
@@ -51,12 +29,16 @@ AFTER INSERT ON bezeroa
 for each row 
 begin
 	declare v_IDBezeroa varchar(32);
-		SELECT IDBezeroa into v_IDBezeroa
-		from bezeroa
-		where IDBezeroa = NEW.IDBezeroa AND mota = "Premium";
+    declare v_mota enum('Premium','Free');
+    
+		SELECT IDBezeroa, mota INTO v_IDBezeroa, v_mota
+		FROM bezeroa
+		WHERE IDBezeroa = NEW.IDBezeroa;
+        
+        IF v_mota = 'Premium' then
+			INSERT INTO premium VALUES (v_IDBezeroa, date_add(curdate(),  interval 1 year));
+		END IF;
 
-INSERT INTO premium VALUES 
-(v_IDBezeroa, date_add(curdate(),  interval 1 year));
 end;
 //
 
@@ -67,15 +49,42 @@ AFTER UPDATE ON bezeroa
 for each row 
 begin
 
-	declare v_IDBezeroa varchar(32);
-		SELECT IDBezeroa into v_IDBezeroa
+	DECLARE v_IDBezeroa varchar(32);
+	DECLARE v_mota enum('Premium','Free');
+    DECLARE v_aktiboa tinyint(1);
+    
+		SELECT IDBezeroa, mota, Aktiboa INTO v_IDBezeroa, v_mota, v_aktiboa
 		FROM bezeroa
-		WHERE IDBezeroa = OLD.IDBezeroa AND Aktiboa = false;
-DELETE FROM premium WHERE IDBezeroa = v_IDBezeroa;
+		WHERE IDBezeroa = OLD.IDBezeroa;
+        
+		IF v_mota = 'Premium' AND v_aktiboa = false then
+			DELETE FROM premium WHERE IDBezeroa = v_IDBezeroa;
+		END IF;
 end;
 //
 
--- GERTAERAK
+-- Bezeroa bere mota aldatzen badu PREMIUM erosi eta gero, premium taula barruan sartuko da.
+DELIMITER //
+CREATE TRIGGER PremiumTauletanSartu
+AFTER UPDATE ON bezeroa
+for each row 
+begin
+
+	DECLARE v_IDBezeroa varchar(32);
+	DECLARE v_mota enum('Premium','Free');
+    
+		SELECT IDBezeroa, NEW.mota INTO v_IDBezeroa, v_mota
+		FROM bezeroa
+		WHERE IDBezeroa = NEW.IDBezeroa;
+        
+		IF v_mota = 'Premium' THEN
+				INSERT INTO premium VALUES (v_IDBezeroa, date_add(curdate(),  interval 1 year));
+		END IF;
+        
+end;
+//
+
+-- Bi egun amaitu baino lehenago, erabiltzailea beste tauletatik sartuko da eta mezu bat jasoko du.
 DELIMITER $$
 create event PremiumDataMezua on schedule
 every 1 day starts current_timestamp()
@@ -96,13 +105,14 @@ begin
     
 	while amaiera = 0 do
 		fetch c into v_IraungitzeData, v_IDBezeroa;
-			insert into MezuaErabiltzaileak values (v_IDBezeroa, concat("Kontuz, zure premium kontua amaituko da: ", v_IraungitzeData, " egunetan, errenobatu edo amaitu"));
+			INSERT INTO MezuaErabiltzaileak VALUES (v_IDBezeroa, concat("Kontuz, zure premium kontua amaituko da: ", v_IraungitzeData, " egunetan, errenobatu edo amaitu"));
     end while;
     close c;
 
 end;
 $$
 
+-- Data pasatzen bada eta erabiltzailea ez badu erosten berriro PREMIUM, mezu tauletatik eta premium tauletatik kenduko da.
 DELIMITER $$
 create event PremiumTauletatikKendu on schedule
 every 1 day starts current_timestamp()
