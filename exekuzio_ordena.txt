@@ -1,0 +1,4 @@
+1.- BD_JPamt7 script sorrera.
+2.- IndizeakTrigerrak script exekuzioa.
+3.- ErabiltzaileakEtaBaimeank script exekuzioa.
+4.- Insert karpeta barruan insert guztiak.

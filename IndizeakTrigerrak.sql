@@ -22,20 +22,25 @@ CREATE INDEX idx_plalist_Izenburua ON playlist (Izenburua);
 CREATE INDEX indx_playlist_audioa ON playlist_abestiak (IdAudio);
 
 -- ----------------------------------------------------------------------------------- Premium trigger-ak -----------------------------------------------------------------------------------
+ -- DROP TRIGGER PremiumTauletikKendu;
+-- DROP TRIGGER PremiumTauletanSartu;
+-- DROP TRIGGER PremiumTaulaBete;
+
 -- Premium erabiltzaile bat sortzean, automatikoki premium taulan sartuko da.
 DELIMITER //
 CREATE TRIGGER PremiumTaulaBete
 AFTER INSERT ON bezeroa
 for each row 
 begin
-	declare v_IDBezeroa varchar(32);
-    declare v_mota enum('Premium','Free');
+	DECLARE v_IDBezeroa varchar(32);
+    DECLARE v_mota enum('Premium','Free');
+	DECLARE v_aktiboa tinyint(1);
     
-		SELECT IDBezeroa, mota INTO v_IDBezeroa, v_mota
+		SELECT IDBezeroa, mota, Aktiboa INTO v_IDBezeroa, v_mota, v_aktiboa
 		FROM bezeroa
 		WHERE IDBezeroa = NEW.IDBezeroa;
         
-        IF v_mota = 'Premium' then
+        IF v_mota = 'Premium' AND v_aktiboa = true then
 			INSERT INTO premium VALUES (v_IDBezeroa, date_add(curdate(),  interval 1 year));
 		END IF;
 
@@ -43,6 +48,7 @@ end;
 //
 
 -- Bezeroa bere kontua desaktibatzean, premium tauletik kendu
+DROP TRIGGER IF EXISTS PremiumTauletikKendu;
 DELIMITER //
 CREATE TRIGGER PremiumTauletikKendu
 AFTER UPDATE ON bezeroa
@@ -55,7 +61,7 @@ begin
     
 		SELECT IDBezeroa, mota, Aktiboa INTO v_IDBezeroa, v_mota, v_aktiboa
 		FROM bezeroa
-		WHERE IDBezeroa = OLD.IDBezeroa;
+		WHERE IDBezeroa = NEW.IDBezeroa;
         
 		IF v_mota = 'Premium' AND v_aktiboa = false then
 			DELETE FROM premium WHERE IDBezeroa = v_IDBezeroa;
@@ -72,12 +78,13 @@ begin
 
 	DECLARE v_IDBezeroa varchar(32);
 	DECLARE v_mota enum('Premium','Free');
+	DECLARE v_aktiboa tinyint(1);
     
-		SELECT IDBezeroa, NEW.mota INTO v_IDBezeroa, v_mota
+		SELECT IDBezeroa, mota, Aktiboa INTO v_IDBezeroa, v_mota, v_aktiboa
 		FROM bezeroa
 		WHERE IDBezeroa = NEW.IDBezeroa;
         
-		IF v_mota = 'Premium' THEN
+		IF v_mota = 'Premium' AND v_aktiboa = true AND OLD.mota ='Free' THEN
 				INSERT INTO premium VALUES (v_IDBezeroa, date_add(curdate(),  interval 1 year));
 		END IF;
         
