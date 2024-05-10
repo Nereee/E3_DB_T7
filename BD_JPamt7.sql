@@ -237,9 +237,20 @@ SELECT p.IDList, p.Izenburua, p.IDBezeroa, count(pa.IdAudio)
 		LEFT JOIN playlist_abestiak pa using (IDList)
 	GROUP BY 1,2,3;
 
+CREATE OR REPLACE VIEW playlistAbestiakInfo 
+AS
+SELECT * 
+	FROM playlist p 
+		JOIN playlist_abestiak pa USING(IDList) 
+        JOIN audio USING(IdAudio);
 
-
-
+CREATE OR REPLACE VIEW playlistAbestiakInfo 
+AS
+SELECT `Abesti izena` AS abestiIzena, ab.Izenburua AS albumIzena, `Artista izena` AS artistaIzena, a.Iraupena AS iraupena, IDList, p.Izenburua AS playlistIzena, Sorrera_data 
+	FROM playlist p
+		JOIN playlist_abestiak pa USING(IDList) 
+		JOIN audio a USING(IdAudio)  
+		JOIN AbestiInformazioa ab USING(IdAudio);
 
 
 
