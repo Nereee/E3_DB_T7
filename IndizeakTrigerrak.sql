@@ -1,26 +1,5 @@
 use db_JPamt7;
 
--- Artista bere izena bidez bilatu.
-CREATE INDEX indx_musikariIzena on musikaria(IzenArtistikoa);
-CREATE INDEX indx_podcasterIzena on podcaster (IzenArtistikoa);
-
--- Artisten id bidez albuma edo podcast bilatu.
-CREATE INDEX indx_musikariaalbuman ON album (IDMusikaria);
-CREATE INDEX indx_podcasterpodcast ON podcast (IDPodcaster);
-
--- Erabiltze izen bidez bezeroa bilatu.
-CREATE INDEX indx_bezeroa ON bezeroa (Erabiltzailea);
-
--- IdAudio bidez podcast eta abestia bilatu.
-CREATE INDEX indx_audio ON podcast (IdAudio);
-
--- IdAudio bidez album-a bilatu.
-CREATE INDEX indx_albumAudio ON album (IdAudio);
-
--- Playlist izen eta idAudio bidez bilatu.
-CREATE INDEX idx_plalist_Izenburua ON playlist (Izenburua);
-CREATE INDEX indx_playlist_audioa ON playlist_abestiak (IdAudio);
-
 -- ----------------------------------------------------------------------------------- Premium trigger-ak -----------------------------------------------------------------------------------
  -- DROP TRIGGER PremiumTauletikKendu;
 -- DROP TRIGGER PremiumTauletanSartu;
@@ -70,6 +49,7 @@ end;
 //
 
 -- Bezeroa bere mota aldatzen badu PREMIUM erosi eta gero, premium taula barruan sartuko da.
+DROP TRIGGER IF EXISTS PremiumTauletanSartu;
 DELIMITER //
 CREATE TRIGGER PremiumTauletanSartu
 AFTER UPDATE ON bezeroa
@@ -91,6 +71,7 @@ begin
 end;
 //
 
+DROP TRIGGER IF EXISTS PremiumDataMezua;
 -- Bi egun amaitu baino lehenago, erabiltzailea beste tauletatik sartuko da eta mezu bat jasoko du.
 DELIMITER $$
 create event PremiumDataMezua on schedule
@@ -119,6 +100,7 @@ begin
 end;
 $$
 
+DROP TRIGGER IF EXISTS PremiumTauletatikKendu;
 -- Data pasatzen bada eta erabiltzailea ez badu erosten berriro PREMIUM, mezu tauletatik eta premium tauletatik kenduko da.
 DELIMITER $$
 create event PremiumTauletatikKendu on schedule
@@ -178,12 +160,20 @@ WHERE
 END;
 // 
 
--- Berdina, baina gustoko bat sartzekoan begiratuko du ea Podcast edo Abestia bada eta insert bat edo bestea egingo du.
+DELIMITER //
+-- Egunean behin egiten den gertaera, eguneroGustoko estatistika betetzeko.
+CREATE EVENT estatistikakEguneroGustukoakGertaera
+ON SCHEDULE
+    EVERY 1 DAY
+DO
+BEGIN
+    CALL estatistikakEguneroGustukoak();
+END;
+//
+
 DELIMITER //
 -- Estatistikak gustukoak
-CREATE TRIGGER estatistikakEguneroGustukoak
-AFTER INSERT ON gustukoak
-FOR EACH ROW
+CREATE PROCEDURE estatistikakEguneroGustukoak()
 BEGIN
 
 DECLARE audio_kop INT;
@@ -228,7 +218,6 @@ DELIMITER //
 -- estatistikakAstean tauletan txertatu.
 CREATE EVENT insert_estatistikakAstean
 ON SCHEDULE EVERY 1 WEEK
--- STARTS 'YYYY-MM-DD 00:00:00'
 DO
 BEGIN
     DECLARE lehen_date DATE;
@@ -342,5 +331,6 @@ BEGIN
     END IF;
 END;
 //
+
 
 

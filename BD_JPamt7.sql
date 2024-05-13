@@ -135,6 +135,7 @@ CREATE TABLE estatistikakEgunero (
     GustokoAbestiak int,
     GustokoPodcast int,
     TopEntzundakoak int,
+	TopPlaylist int,
 	primary key(eguna,IDAudio),
     foreign key (IDAudio) references audio (IdAudio)
 );
@@ -145,6 +146,7 @@ CREATE TABLE estatistikakAstean (
     GustokoAbestiak int,
     GustokoPodcast int,
     TopEntzundakoak int,
+    TopPlaylist int,
 	primary key(IDEstastean),
     foreign key (IDAudio) references audio (IdAudio)
 );
@@ -155,6 +157,7 @@ CREATE TABLE estatistikakHilabetean (
     GustokoAbestiak int,
     GustokoPodcast int,
     TopEntzundakoak int,
+	TopPlaylist int,
     primary key (IDEsthilabetean),
     foreign key (IDAudio) references audio (IdAudio)
 );
@@ -165,6 +168,7 @@ CREATE TABLE estatistikakUrtean (
     GustokoAbestiak int,
     GustokoPodcast int,
     TopEntzundakoak int,
+	TopPlaylist int,
     primary key (IDEsturtean),
     foreign key (IDAudio) references audio (IdAudio)
 );
@@ -175,10 +179,33 @@ CREATE TABLE estatistikakTotalak (
     GustokoAbestiak int,
     GustokoPodcast int,
     TopEntzundakoak int,
+	TopPlaylist int,
     primary key (IDEsttotala),
     foreign key (IDAudio) references audio (IdAudio)
 );
 
+-- ----------------------------------------------------------------------------------- Indixeak -----------------------------------------------------------------------------------
+
+-- Artista bere izena bidez bilatu.
+CREATE INDEX indx_musikariIzena on musikaria(IzenArtistikoa);
+CREATE INDEX indx_podcasterIzena on podcaster (IzenArtistikoa);
+
+-- Artisten id bidez albuma edo podcast bilatu.
+CREATE INDEX indx_musikariaalbuman ON album (IDMusikaria);
+CREATE INDEX indx_podcasterpodcast ON podcast (IDPodcaster);
+
+-- Erabiltze izen bidez bezeroa bilatu.
+CREATE INDEX indx_bezeroa ON bezeroa (Erabiltzailea);
+
+-- IdAudio bidez podcast eta abestia bilatu.
+CREATE INDEX indx_audio ON podcast (IdAudio);
+
+-- IdAudio bidez album-a bilatu.
+CREATE INDEX indx_albumAudio ON album (IdAudio);
+
+-- Playlist izen eta idAudio bidez bilatu.
+CREATE INDEX idx_plalist_Izenburua ON playlist (Izenburua);
+CREATE INDEX indx_playlist_audioa ON playlist_abestiak (IdAudio);
 
 -- ----------------------------------------------------------------------------------- Bistak -----------------------------------------------------------------------------------
 
