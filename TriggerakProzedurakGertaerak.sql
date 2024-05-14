@@ -1,19 +1,21 @@
-use db_JPamt7;
+USE db_JPamt7;
 
 -- ----------------------------------------------------------------------------------- Premium trigger-ak -----------------------------------------------------------------------------------
- -- DROP TRIGGER PremiumTauletikKendu;
--- DROP TRIGGER PremiumTauletanSartu;
--- DROP TRIGGER PremiumTaulaBete;
 
+DROP TRIGGER IF EXISTS PremiumTaulaBete;
 -- Premium erabiltzaile bat sortzean, automatikoki premium taulan sartuko da.
+DROP TRIGGER IF EXISTS PremiumTaulaBete;
 DELIMITER //
 CREATE TRIGGER PremiumTaulaBete
 AFTER INSERT ON bezeroa
-for each row 
-begin
+FOR EACH ROW
+BEGIN
 	DECLARE v_IDBezeroa varchar(32);
     DECLARE v_mota enum('Premium','Free');
 	DECLARE v_aktiboa tinyint(1);
+    
+    DECLARE CONTINUE HANDLER FOR 1062 
+    SELECT 'Errorea, gako hori sartuta dago Premium taulen barruan';
     
 		SELECT IDBezeroa, mota, Aktiboa INTO v_IDBezeroa, v_mota, v_aktiboa
 		FROM bezeroa
@@ -23,20 +25,23 @@ begin
 			INSERT INTO premium VALUES (v_IDBezeroa, date_add(curdate(),  interval 1 year));
 		END IF;
 
-end;
+END;
 //
 
 -- Bezeroa bere kontua desaktibatzean, premium tauletik kendu
-DROP TRIGGER IF EXISTS PremiumTauletikKendu;
+DROP TRIGGER IF EXISTS PremiumTauletikKenduTrigger;
 DELIMITER //
-CREATE TRIGGER PremiumTauletikKendu
+CREATE TRIGGER PremiumTauletikKenduTrigger
 AFTER UPDATE ON bezeroa
-for each row 
-begin
+FOR EACH ROW
+BEGIN
 
 	DECLARE v_IDBezeroa varchar(32);
 	DECLARE v_mota enum('Premium','Free');
     DECLARE v_aktiboa tinyint(1);
+    
+	DECLARE CONTINUE HANDLER FOR 1451
+	SELECT 'Ezin da datua aldatu edo ezabatu gakoaren murrizketak huts egiten duelako';
     
 		SELECT IDBezeroa, mota, Aktiboa INTO v_IDBezeroa, v_mota, v_aktiboa
 		FROM bezeroa
@@ -45,7 +50,7 @@ begin
 		IF v_mota = 'Premium' AND v_aktiboa = false then
 			DELETE FROM premium WHERE IDBezeroa = v_IDBezeroa;
 		END IF;
-end;
+END;
 //
 
 -- Bezeroa bere mota aldatzen badu PREMIUM erosi eta gero, premium taula barruan sartuko da.
@@ -53,12 +58,15 @@ DROP TRIGGER IF EXISTS PremiumTauletanSartu;
 DELIMITER //
 CREATE TRIGGER PremiumTauletanSartu
 AFTER UPDATE ON bezeroa
-for each row 
-begin
+FOR EACH ROW
+BEGIN
 
 	DECLARE v_IDBezeroa varchar(32);
 	DECLARE v_mota enum('Premium','Free');
 	DECLARE v_aktiboa tinyint(1);
+    
+	DECLARE CONTINUE HANDLER FOR 1062 
+    SELECT 'Errorea, gako hori sartuta dago Premium taulen barruan';
     
 		SELECT IDBezeroa, mota, Aktiboa INTO v_IDBezeroa, v_mota, v_aktiboa
 		FROM bezeroa
@@ -68,66 +76,71 @@ begin
 				INSERT INTO premium VALUES (v_IDBezeroa, date_add(curdate(),  interval 1 year));
 		END IF;
         
-end;
+END;
 //
 
-DROP TRIGGER IF EXISTS PremiumDataMezua;
+DROP EVENT IF EXISTS PremiumDataMezua;
 -- Bi egun amaitu baino lehenago, erabiltzailea beste tauletatik sartuko da eta mezu bat jasoko du.
 DELIMITER $$
-create event PremiumDataMezua on schedule
-every 1 day starts current_timestamp()
-do
-begin
-	declare v_IraungitzeData date;
-	declare v_IDBezeroa varchar(32);
-	declare amaiera bool default 0;
-	declare c cursor for
-	
+CREATE EVENT PremiumDataMezua ON SCHEDULE
+EVERY 1 DAY STARTS CURRENT_TIMESTAMP()
+DO
+BEGIN
+
+	DECLARE v_IraungitzeData date;
+	DECLARE v_IDBezeroa varchar(32);
+	DECLARE amaiera bool default 0;
+    
+	DECLARE CONTINUE HANDLER FOR 1062 
+    SELECT 'Errorea, erabiltzaile hori sartuta dago MezuaErabiltzaileak taulen barruan';
+    
+	DECLARE c CURSOR FOR
 	SELECT Iraungitze_data, IDBezeroa
 	FROM premium
 	WHERE Iraungitze_data < date_sub(curdate(), interval 2 day);
     
-	declare continue handler for not found
-	set amaiera = 1;
-    open c;
+	DECLARE CONTINUE HANDLER FOR NOT FOUND
+	SET amaiera = 1;
+    OPEN c;
     
-	while amaiera = 0 do
-		fetch c into v_IraungitzeData, v_IDBezeroa;
+	WHILE amaiera = 0 DO
+		FETCH c INTO v_IraungitzeData, v_IDBezeroa;
 			INSERT INTO MezuaErabiltzaileak VALUES (v_IDBezeroa, concat("Kontuz, zure premium kontua amaituko da: ", v_IraungitzeData, " egunetan, errenobatu edo amaitu"));
-    end while;
-    close c;
+    END WHILE;
+    CLOSE c;
 
-end;
+END;
 $$
 
-DROP TRIGGER IF EXISTS PremiumTauletatikKendu;
+DROP EVENT IF EXISTS PremiumTauletatikKendu;
 -- Data pasatzen bada eta erabiltzailea ez badu erosten berriro PREMIUM, mezu tauletatik eta premium tauletatik kenduko da.
 DELIMITER $$
-create event PremiumTauletatikKendu on schedule
-every 1 day starts current_timestamp()
-do
-begin
+CREATE EVENT PremiumTauletatikKendu ON SCHEDULE
+EVERY 1 DAY STARTS CURRENT_TIMESTAMP()
+DO
+BEGIN
 
-declare v_IDBezeroa varchar(32);
-declare amaiera bool default 0;
+	DECLARE v_IDBezeroa varchar(32);
+	DECLARE amaiera bool default 0;
 
-declare c cursor for
+	DECLARE CONTINUE HANDLER FOR 1451
+	SELECT 'Ezin da datua aldatu edo ezabatu gakoaren murrizketak huts egiten duelako';
 
-SELECT IDBezeroa 
-FROM premium
-WHERE Iraungitze_data < date_add(curdate(), interval 2 day);
+	DECLARE c CURSOR FOR
+	SELECT IDBezeroa 
+	FROM premium
+	WHERE Iraungitze_data < date_add(curdate(), interval 2 day);
 
-declare continue handler for not found
-set amaiera = 1;
-   
-    open c;
-        while amaiera = 0 do
-    fetch c into v_IDBezeroa;
-        delete from premium where IDBezeroa = v_IDBezeroa;
-		delete from MezuaErabiltzaileak where IDBezeroa = v_IDBezeroa;
-    end while;
-    close c;
-
+	DECLARE CONTINUE HANDLER FOR NOT FOUND
+	SET amaiera = 1;
+    OPEN c;
+    
+	WHILE amaiera = 0 DO
+		FETCH c INTO v_IDBezeroa;
+			DELETE FROM premium WHERE IDBezeroa = v_IDBezeroa;
+			DELETE FROM MezuaErabiltzaileak WHERE IDBezeroa = v_IDBezeroa;
+    END WHILE;
+    CLOSE c;
 end;
 $$
 
@@ -135,6 +148,7 @@ $$
 
 -- SHOW EVENTS;
 
+DROP TRIGGER IF EXISTS estatistikakEguneroErreprodukzioa;
 -- Erreprodukzio bat egitean EguneroEstatistika tauletan sartuko da.
 DELIMITER //
 CREATE TRIGGER estatistikakEguneroErreprodukzioa
@@ -149,17 +163,18 @@ FROM estatistikakEgunero
 WHERE
     IdAudio = NEW.IdAudio
         AND eguna = DATE(NEW.erreprodukzio_data);
-    if audio_kop > 0 THEN   
+    IF audio_kop > 0 THEN   
         UPDATE estatistikakEgunero
         SET TopEntzundakoak = TopEntzundakoak + 1
         WHERE IdAudio = NEW.IdAudio AND eguna = DATE(NEW.erreprodukzio_data);
-    else
-        insert into estatistikakEgunero (IdAudio, eguna, GustokoAbestiak, GustokoPodcast, TopEntzundakoak)
-        values (NEW.IdAudio, DATE(NEW.erreprodukzio_data), 0, 0, 1); 
+    ELSE
+        INSERT INTO estatistikakEgunero (IdAudio, eguna, GustokoAbestiak, GustokoPodcast, TopEntzundakoak)
+        VALUES (NEW.IdAudio, DATE(NEW.erreprodukzio_data), 0, 0, 1); 
     END IF;
 END;
 // 
 
+DROP EVENT IF EXISTS estatistikakEguneroGustukoakGertaera;
 DELIMITER //
 -- Egunean behin egiten den gertaera, eguneroGustoko estatistika betetzeko.
 CREATE EVENT estatistikakEguneroGustukoakGertaera
@@ -171,23 +186,24 @@ BEGIN
 END;
 //
 
+DROP PROCEDURE IF EXISTS estatistikakEguneroGustukoak;
 DELIMITER //
 -- Estatistikak gustukoak
 CREATE PROCEDURE estatistikakEguneroGustukoak()
 BEGIN
 
-DECLARE audio_kop INT;
-DECLARE v_mota enum('Podcasta','Abestia');
+	DECLARE audio_kop INT;
+	DECLARE v_mota enum('Podcasta','Abestia');
 
--- Begiratu ea abesti edo podcast hori badago taulan.
-SELECT COUNT(*) INTO audio_kop
-FROM estatistikakEgunero 
-WHERE IdAudio = NEW.IdAudio;
-	
--- Mota berrezkuratu.
-SELECT mota into v_mota
-FROM audio 
-WHERE IdAudio = NEW.IdAudio;
+	-- Begiratu ea abesti edo podcast hori badago taulan.
+	SELECT COUNT(*) INTO audio_kop
+	FROM estatistikakEgunero 
+	WHERE IdAudio = NEW.IdAudio;
+		
+	-- Mota berrezkuratu.
+	SELECT mota into v_mota
+	FROM audio 
+	WHERE IdAudio = NEW.IdAudio;
 
 	-- Audio hori badago, update egingo da. Podcast edo abestia bada egiaztatu egingo da.
     IF audio_kop > 0 THEN   
@@ -213,6 +229,7 @@ WHERE IdAudio = NEW.IdAudio;
 END;
 //
 
+DROP EVENT IF EXISTS insert_estatistikakAstean;
 -- Astean behin, datu osoak beteko dira.
 DELIMITER //
 -- estatistikakAstean tauletan txertatu.
@@ -238,12 +255,12 @@ BEGIN
 END;
 //
 
+DROP EVENT IF EXISTS insert_estatistikakHilabetean;
 -- Berdina baina hilabetea bukatzean, datu gustiak beteko dira.
 DELIMITER //
 -- estatistikakHilabetean tauletan txertatu.
 CREATE EVENT insert_estatistikakHilabetean
 ON SCHEDULE EVERY 1 MONTH
--- STARTS 'YYYY-MM-01 00:00:00'
 DO
 BEGIN
     DECLARE lehen_date DATE;
@@ -264,15 +281,25 @@ BEGIN
 END;
 //
 
+
+DROP EVENT IF EXISTS insert_estatistikakUrtean_gertaera;
 -- Urtea amaitzerakoan, datu guztiak sartuko dira.
 DELIMITER //
 -- estatistikakUrtean tauletan txertatu.
-CREATE EVENT insert_estatistikakUrtean
+CREATE EVENT insert_estatistikakUrtean_gertaera
 ON SCHEDULE EVERY 1 YEAR
 STARTS '2024-05-06 00:00:00'
 DO
 BEGIN
-    DECLARE lehen_date DATE;
+	CALL insert_estatistikakUrtean();
+END;
+//
+
+DROP PROCEDURE IF EXISTS insert_estatistikakUrtean;
+DELIMITER //
+CREATE PROCEDURE insert_estatistikakUrtean()
+BEGIN
+	DECLARE lehen_date DATE;
     DECLARE azken_date DATE;
     
     -- Urtearen hasierako data lortu eta gorde.
@@ -290,6 +317,7 @@ BEGIN
 END;
 //
 
+DROP EVENT IF EXISTS estadistikakTotala_insert;
 -- Egun bakoitzean, totala taula beteko da.
 DELIMITER //
 CREATE EVENT estadistikakTotala_insert
@@ -301,6 +329,7 @@ BEGIN
 END;
 //
 
+DROP PROCEDURE IF EXISTS estadistikakTotalaBete;
 DELIMITER //
 CREATE PROCEDURE estadistikakTotalaBete()
 BEGIN
@@ -321,7 +350,6 @@ BEGIN
             t.GustokoPodcast = t.GustokoPodcast + e.GustokoPodcast,
             t.TopEntzundakoak = t.TopEntzundakoak + e.TopEntzundakoak;
     
-    -- Si el IdAudio no existe, realizar un INSERT
     ELSE
         INSERT INTO estatistikakTotalak (IdAudio, GustokoAbestiak, GustokoPodcast, TopEntzundakoak)
         SELECT IdAudio, SUM(GustokoAbestiak), SUM(GustokoPodcast), SUM(TopEntzundakoak)

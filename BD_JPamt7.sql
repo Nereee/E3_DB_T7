@@ -1,11 +1,11 @@
-drop database if exists db_JPamt7;
+DROP DATABASE IF EXISTS db_JPamt7;
 
-create database	if not exists db_JPamt7
+CREATE DATABASE	IF NOT EXISTS db_JPamt7
 CHARACTER SET utf8 COLLATE utf8mb3_general_ci;
 
-use db_JPamt7;
+USE db_JPamt7;
 
-create table musikaria(
+CREATE TABLE musikaria(
 	IDMusikaria int auto_increment,
 	IzenArtistikoa varchar(30) not null unique,
 	Irudia blob,
@@ -14,7 +14,7 @@ create table musikaria(
 	Primary key (IDMusikaria) 
 );
 
-create table podcaster (
+CREATE TABLE podcaster (
 	IDPodcaster int auto_increment,
 	IzenArtistikoa varchar(30) not null unique,
 	Irudia blob,
@@ -22,13 +22,13 @@ create table podcaster (
 	Primary key (IDPodcaster)
 );
 
-create table hizkuntza (
+CREATE TABLE hizkuntza (
 	IdHizkuntza enum("ES","EU","EN","FR","DE","CA","GA","AR") not null,
 	Deskribapena varchar(100) not null,
 	Primary key (IdHizkuntza)
 );
 
-create table bezeroa  (
+CREATE TABLE bezeroa  (
 	IDBezeroa varchar(32),
 	Izena varchar(30) not null,
 	Abizena varchar(30) not null,
@@ -51,14 +51,14 @@ CREATE TABLE MezuaErabiltzaileak (
     Foreign key (IDBezeroa) references bezeroa (IDBezeroa)
 );
 
-create table premium (
+CREATE TABLE premium (
 	IDBezeroa varchar(32),
 	Iraungitze_data date not null,
 	Primary key (IDBezeroa),
     Constraint IDBezeroa_fk1 foreign key(IDBezeroa) references bezeroa (IDBezeroa) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-create table audio  (
+CREATE TABLE audio  (
 	IdAudio int auto_increment,
 	Izena varchar(30) not null,
 	Irudia longblob,
@@ -67,7 +67,7 @@ create table audio  (
 	Constraint IdAudio_pk1 Primary key (IdAudio)
 );
 
-create table album   (
+CREATE TABLE album   (
 	IdAlbum int auto_increment,
 	Izenburua varchar(30) not null,
 	Urtea date not null,
@@ -77,7 +77,7 @@ create table album   (
     Constraint IDMusikaria_fk1 foreign key(IDMusikaria) references musikaria (IDMusikaria)  ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-create table podcast  (
+CREATE TABLE podcast  (
 	IdAudio int auto_increment, 
 	Kolaboratzaileak varchar(255),
 	IDPodcaster int not null, 
@@ -86,7 +86,7 @@ create table podcast  (
 	Constraint IDPodcaster_fk1 foreign key(IDPodcaster) references podcaster (IDPodcaster) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
-create table abestia  (
+CREATE TABLE abestia  (
 	IdAudio int,
 	IdAlbum int not null, 
 	Primary key (IdAudio),
@@ -94,7 +94,7 @@ create table abestia  (
     Constraint IdAlbum_fk1 foreign key(IdAlbum) references album (IdAlbum)  ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-create table playlist    (
+CREATE TABLE playlist    (
 	IDList int auto_increment, 
 	Izenburua varchar(30) not null,
 	Sorrera_data date not null,
@@ -103,7 +103,7 @@ create table playlist    (
     Constraint IDBezeroa_fk2 foreign key(IDBezeroa) references bezeroa (IDBezeroa) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-create table playlist_abestiak    (
+CREATE TABLE playlist_abestiak    (
 	IDList int, 
 	IdAudio int,
 	Primary key (IDList,IdAudio),
@@ -111,7 +111,7 @@ create table playlist_abestiak    (
     Constraint IdAudio_fk3 foreign key(IdAudio) references audio (IdAudio) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
-create table gustukoak(
+CREATE TABLE gustukoak(
 	IDBezeroa varchar(32),
 	IdAudio int,
 	Primary key (IDBezeroa,IdAudio),
@@ -119,7 +119,7 @@ create table gustukoak(
     Constraint IdAudio_fk4 foreign key(IdAudio) references audio (IdAudio) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
-create table erreprodukzioak(
+CREATE TABLE erreprodukzioak(
 	IDerreprodukzioak int auto_increment,
 	IDBezeroa varchar(32),
 	IdAudio int,
@@ -135,7 +135,6 @@ CREATE TABLE estatistikakEgunero (
     GustokoAbestiak int,
     GustokoPodcast int,
     TopEntzundakoak int,
-	TopPlaylist int,
 	primary key(eguna,IDAudio),
     foreign key (IDAudio) references audio (IdAudio)
 );
@@ -146,7 +145,6 @@ CREATE TABLE estatistikakAstean (
     GustokoAbestiak int,
     GustokoPodcast int,
     TopEntzundakoak int,
-    TopPlaylist int,
 	primary key(IDEstastean),
     foreign key (IDAudio) references audio (IdAudio)
 );
@@ -157,7 +155,6 @@ CREATE TABLE estatistikakHilabetean (
     GustokoAbestiak int,
     GustokoPodcast int,
     TopEntzundakoak int,
-	TopPlaylist int,
     primary key (IDEsthilabetean),
     foreign key (IDAudio) references audio (IdAudio)
 );
@@ -168,7 +165,6 @@ CREATE TABLE estatistikakUrtean (
     GustokoAbestiak int,
     GustokoPodcast int,
     TopEntzundakoak int,
-	TopPlaylist int,
     primary key (IDEsturtean),
     foreign key (IDAudio) references audio (IdAudio)
 );
@@ -179,7 +175,6 @@ CREATE TABLE estatistikakTotalak (
     GustokoAbestiak int,
     GustokoPodcast int,
     TopEntzundakoak int,
-	TopPlaylist int,
     primary key (IDEsttotala),
     foreign key (IDAudio) references audio (IdAudio)
 );
@@ -200,8 +195,8 @@ CREATE INDEX indx_bezeroa ON bezeroa (Erabiltzailea);
 -- IdAudio bidez podcast eta abestia bilatu.
 CREATE INDEX indx_audio ON podcast (IdAudio);
 
--- IdAudio bidez album-a bilatu.
-CREATE INDEX indx_albumAudio ON album (IdAudio);
+-- Izenburuaren bidez album-a bilatu.
+CREATE INDEX indx_albumIzenburua ON album (Izenburua);
 
 -- Playlist izen eta idAudio bidez bilatu.
 CREATE INDEX idx_plalist_Izenburua ON playlist (Izenburua);
@@ -212,9 +207,9 @@ CREATE INDEX indx_playlist_audioa ON playlist_abestiak (IdAudio);
 -- Podcast eta abestiaren datu interesgarriak irazkutzeko (izena, album izena, artista eta iraupena)
 CREATE OR REPLACE VIEW AbestiInformazioa
 AS 
-SELECT audio.izena AS "Abesti izena", album.izenburua AS "Izenburua", musikaria.IzenArtistikoa AS "Artista izena", audio.Iraupena AS "Iraupena"
+SELECT audio.izena AS "Abesti izena", album.izenburua AS "Izenburua", musikaria.IzenArtistikoa AS "Artista izena", audio.Iraupena AS "Iraupena", IdAudio
     FROM abestia JOIN audio using (IdAudio)
-                JOIN album USING (IdAlbum)
+				JOIN album USING (IdAlbum)
                 JOIN musikaria USING (IDMusikaria);
 
 
@@ -259,26 +254,30 @@ SELECT IdAudio, Izena, Iraupena, count(IdAudio)
 -- Playlist izena, id-a, horietako bezeroa eta zenbat abesti daukan.
 CREATE OR REPLACE VIEW playlistInfoKop
 AS 
-SELECT p.IDList, p.Izenburua, p.IDBezeroa, count(pa.IdAudio)
+SELECT p.IDList, p.Izenburua, p.IDBezeroa, count(pa.IdAudio) as Kapazitatea, Sorrera_data
 	FROM playlist p 
 		LEFT JOIN playlist_abestiak pa using (IDList)
 	GROUP BY 1,2,3;
 
+-- Playlist bakoitzaren abestia informazioa.
 CREATE OR REPLACE VIEW playlistAbestiakInfo 
 AS
-SELECT * 
-	FROM playlist p 
-		JOIN playlist_abestiak pa USING(IDList) 
-        JOIN audio USING(IdAudio);
-
-CREATE OR REPLACE VIEW playlistAbestiakInfo 
-AS
-SELECT `Abesti izena` AS abestiIzena, ab.Izenburua AS albumIzena, `Artista izena` AS artistaIzena, a.Iraupena AS iraupena, IDList, p.Izenburua AS playlistIzena, Sorrera_data 
+SELECT `Abesti izena` AS abestiIzena, a.Irudia, a.IdAudio, ab.Izenburua AS albumIzena, `Artista izena` AS artistaIzena, alb.Generoa as albumGeneroa, 
+							a.Iraupena AS iraupena, IDList, p.Izenburua AS playlistIzena, Sorrera_data AS "albumUrtea"
 	FROM playlist p
-		JOIN playlist_abestiak pa USING(IDList) 
-		JOIN audio a USING(IdAudio)  
+		JOIN playlist_abestiak pa USING (IDList) 
+		JOIN audio a USING (IdAudio) 
+        JOIN abestia abe USING (IdAudio)
+        JOIN album alb USING (IdAlbum)
 		JOIN AbestiInformazioa ab USING(IdAudio);
 
-
+-- Playlist bakoitzean dagoen abesti kopurua
+CREATE OR REPLACE VIEW playlistAbestiKop 
+AS
+SELECT play.Izenburua, play.IDList, count(pb.IdAudio) as Kopurua
+	FROM playlist play 
+		JOIN playlist_abestiak pb USING (IDList)
+	GROUP BY 1,2
+ORDER BY 3 DESC;
 
 

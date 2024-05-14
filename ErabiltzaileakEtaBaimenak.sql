@@ -48,6 +48,7 @@ GRANT SELECT ON db_JPamt7.estatistikakAstean to dbDepartBurua;
 GRANT SELECT ON db_JPamt7.estatistikakHilabetean to dbDepartBurua;
 GRANT SELECT ON db_JPamt7.estatistikakUrtean to dbDepartBurua;
 GRANT SELECT ON db_JPamt7.estatistikakTotalak to dbDepartBurua;
+
 -- Bezeroen baimenak
 GRANT SELECT, INSERT, UPDATE, DELETE ON db_JPamt7.gustukoak to dbBezeroa ;
 GRANT SELECT, INSERT, UPDATE, DELETE ON db_JPamt7.playlist to dbBezeroa ;
@@ -73,11 +74,6 @@ CREATE USER IF NOT EXISTS "julen"@"10.5.6.223" IDENTIFIED BY "ORANGE";
 
 GRANT dbAdmin TO "administrador"@"10.5.6.223";
 GRANT dbDepartBurua TO "leire"@"10.5.6.223";
-
-DROP user unai;
-
-GRANT ALL PRIVILEGES ON db_JPamt7.* TO unai;
-
 GRANT dbAnalista TO "unai"@"10.5.6.223";
 GRANT dbAnalista TO "markel"@"10.5.6.223";
 GRANT dbLangileak TO "irati"@"10.5.6.223";
