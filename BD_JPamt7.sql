@@ -230,17 +230,17 @@ SELECT count(bezeroa.IDBezeroa) AS "Bezero Kopurua", count(premium.IDBezeroa) AS
 CREATE OR REPLACE VIEW musikaria_erreprodukzioak
 AS 
 SELECT m.IzenArtistikoa AS IzenArtistikoa, SUM(es.TopEntzundakoak) AS Totala
-	FROM musikaria m JOIN album a using (IDMusikaria)
-		JOIN abestia ab using (IdAlbum)
-        JOIN estatistikakTotalak es using (IDAudio)
+	FROM musikaria m LEFT JOIN album a using (IDMusikaria)
+		LEFT JOIN abestia ab  using (IdAlbum)
+        LEFT JOIN estatistikakTotalak es using (IDAudio)
 	GROUP BY 1;
     
 -- Podcaster-ek zenbat erreproduzio TOTALAK dituzte.
 CREATE OR REPLACE VIEW podcaster_erreprodukzioak
 AS 
 SELECT IzenArtistikoa AS Podcaster, SUM(es.TopEntzundakoak) AS Totala
-	FROM podcaster p JOIN podcast pd using (IDPodcaster)
-        JOIN estatistikakTotalak es using (IDAudio)
+	FROM podcaster p LEFT JOIN podcast pd using (IDPodcaster)
+        LEFT JOIN estatistikakTotalak es using (IDAudio)
 	GROUP BY 1; 
 
 --  Musikariaren arabera, abestiak atera.

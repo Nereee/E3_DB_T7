@@ -1,0 +1,136 @@
+.italic {
+    font-style: italic;
+}
+
+.logo-ue {
+    display: block;
+    height: 75px;
+    width: 295px;
+    margin-left: -30px;
+    background-repeat: no-repeat;
+    background-image: url("https://europa.eu/europass/eportfolio/api/eprofile/static/share-profile/images/logo/EU_logo-en.svg");
+}
+
+.logo-ue-bg {
+    background-image: url("https://europa.eu/europass/eportfolio/api/eprofile/static/share-profile/images/logo/EU_logo-bg.svg");
+}
+
+.logo-ue-cs {
+    background-image: url("https://europa.eu/europass/eportfolio/api/eprofile/static/share-profile/images/logo/EU_logo-cs.svg");
+}
+
+.logo-ue-da {
+    background-image: url("https://europa.eu/europass/eportfolio/api/eprofile/static/share-profile/images/logo/EU_logo-da.svg");
+}
+
+.logo-ue-de {
+    background-image: url("https://europa.eu/europass/eportfolio/api/eprofile/static/share-profile/images/logo/EU_logo-de.svg");
+}
+
+.logo-ue-el {
+    background-image: url("https://europa.eu/europass/eportfolio/api/eprofile/static/share-profile/images/logo/EU_logo-el.svg");
+}
+
+.logo-ue-en {
+    background-image: url("https://europa.eu/europass/eportfolio/api/eprofile/static/share-profile/images/logo/EU_logo-en.svg");
+}
+
+.logo-ue-es {
+    background-image: url("https://europa.eu/europass/eportfolio/api/eprofile/static/share-profile/images/logo/EU_logo-es.svg");
+}
+
+.logo-ue-et {
+    background-image: url("https://europa.eu/europass/eportfolio/api/eprofile/static/share-profile/images/logo/EU_logo-et.svg");
+}
+
+.logo-ue-fi {
+    background-image: url("https://europa.eu/europass/eportfolio/api/eprofile/static/share-profile/images/logo/EU_logo-fi.svg");
+}
+
+.logo-ue-fr {
+    background-image: url("https://europa.eu/europass/eportfolio/api/eprofile/static/share-profile/images/logo/EU_logo-fr.svg");
+}
+
+.logo-ue-ga {
+    background-image: url("https://europa.eu/europass/eportfolio/api/eprofile/static/share-profile/images/logo/EU_logo-ga.svg");
+}
+
+.logo-ue-hr {
+    background-image: url("https://europa.eu/europass/eportfolio/api/eprofile/static/share-profile/images/logo/EU_logo-hr.svg");
+}
+
+.logo-ue-hu {
+    background-image: url("https://europa.eu/europass/eportfolio/api/eprofile/static/share-profile/images/logo/EU_logo-hu.svg");
+}
+
+.logo-ue-is {
+    background-image: url("https://europa.eu/europass/eportfolio/api/eprofile/static/share-profile/images/logo/EU_logo-is.svg");
+}
+
+.logo-ue-it {
+    background-image: url("https://europa.eu/europass/eportfolio/api/eprofile/static/share-profile/images/logo/EU_logo-it.svg");
+}
+
+.logo-ue-lt {
+    background-image: url("https://europa.eu/europass/eportfolio/api/eprofile/static/share-profile/images/logo/EU_logo-lt.svg");
+}
+
+.logo-ue-lv {
+    background-image: url("https://europa.eu/europass/eportfolio/api/eprofile/static/share-profile/images/logo/EU_logo-lv.svg");
+}
+
+.logo-ue-mk {
+    background-image: url("https://europa.eu/europass/eportfolio/api/eprofile/static/share-profile/images/logo/EU_logo-mk.svg");
+}
+
+.logo-ue-mt {
+    background-image: url("https://europa.eu/europass/eportfolio/api/eprofile/static/share-profile/images/logo/EU_logo-mt.svg");
+}
+
+.logo-ue-nl {
+    background-image: url("https://europa.eu/europass/eportfolio/api/eprofile/static/share-profile/images/logo/EU_logo-nl.svg");
+}
+
+.logo-ue-no {
+    background-image: url("https://europa.eu/europass/eportfolio/api/eprofile/static/share-profile/images/logo/EU_logo-no.svg");
+}
+
+.logo-ue-pl {
+    background-image: url("https://europa.eu/europass/eportfolio/api/eprofile/static/share-profile/images/logo/EU_logo-pl.svg");
+}
+
+.logo-ue-pt {
+    background-image: url("https://europa.eu/europass/eportfolio/api/eprofile/static/share-profile/images/logo/EU_logo-pt.svg");
+}
+
+.logo-ue-ro {
+    background-image: url("https://europa.eu/europass/eportfolio/api/eprofile/static/share-profile/images/logo/EU_logo-ro.svg");
+}
+
+.logo-ue-sr {
+    background-image: url("https://europa.eu/europass/eportfolio/api/eprofile/static/share-profile/images/logo/EU_logo-sr.svg");
+}
+
+.logo-ue-sk {
+    background-image: url("https://europa.eu/europass/eportfolio/api/eprofile/static/share-profile/images/logo/EU_logo-sk.svg");
+}
+
+.logo-ue-sl {
+    background-image: url("https://europa.eu/europass/eportfolio/api/eprofile/static/share-profile/images/logo/EU_logo-sl.svg");
+}
+
+.logo-ue-sv {
+    background-image: url("https://europa.eu/europass/eportfolio/api/eprofile/static/share-profile/images/logo/EU_logo-sv.svg");
+}
+
+.logo-ue-tr {
+    background-image: url("https://europa.eu/europass/eportfolio/api/eprofile/static/share-profile/images/logo/EU_logo-tr.svg");
+}
+
+.logo-ue-uk {
+    background-image: url("https://europa.eu/europass/eportfolio/api/eprofile/static/share-profile/images/logo/EU_logo-uk.svg");
+}
+
+.logo-ue-me {
+    background-image: url("https://europa.eu/europass/eportfolio/api/eprofile/static/share-profile/images/logo/EU_logo-me.svg");
+}
