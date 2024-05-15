@@ -1,4 +1,5 @@
 -- ALBUM
+ALTER TABLE album AUTO_INCREMENT = 1;
 INSERT INTO album (Izenburua, Urtea, Generoa, IDMusikaria) VALUES
 ('El Mal Querer', '2018-11-02', 'Flamenco', '1'),
 ('Motomami', '2022-03-18', 'Flamenco', '1'),

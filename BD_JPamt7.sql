@@ -178,7 +178,11 @@ CREATE TABLE estatistikakTotalak (
     primary key (IDEsttotala),
     foreign key (IDAudio) references audio (IdAudio)
 );
-
+CREATE TABLE error_log (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    error_message VARCHAR(255),
+    error_time DATETIME
+);
 -- ----------------------------------------------------------------------------------- Indixeak -----------------------------------------------------------------------------------
 
 -- Artista bere izena bidez bilatu.
@@ -247,8 +251,8 @@ SELECT IzenArtistikoa AS Podcaster, SUM(es.TopEntzundakoak) AS Totala
 CREATE OR REPLACE VIEW musikari_abestiak
 AS
 SELECT IdAudio, Izena, Iraupena, count(IdAudio) 
-	FROM audio a JOIN abestia USING (IdAudio) 
-		JOIN album USING (IdAlbum) 
+	FROM audio a RIGHT JOIN abestia USING (IdAudio) 
+		RIGHT JOIN album USING (IdAlbum) 
 	GROUP BY 1,2,3;
     
 -- Playlist izena, id-a, horietako bezeroa eta zenbat abesti daukan.

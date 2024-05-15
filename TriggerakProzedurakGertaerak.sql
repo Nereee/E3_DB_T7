@@ -2,31 +2,38 @@ USE db_JPamt7;
 
 -- ----------------------------------------------------------------------------------- Premium trigger-ak -----------------------------------------------------------------------------------
 
-DROP TRIGGER IF EXISTS PremiumTaulaBete;
+
 -- Premium erabiltzaile bat sortzean, automatikoki premium taulan sartuko da.
 DROP TRIGGER IF EXISTS PremiumTaulaBete;
 DELIMITER //
+
 CREATE TRIGGER PremiumTaulaBete
 AFTER INSERT ON bezeroa
 FOR EACH ROW
 BEGIN
-	DECLARE v_IDBezeroa varchar(32);
-    DECLARE v_mota enum('Premium','Free');
-	DECLARE v_aktiboa tinyint(1);
-    
-    DECLARE CONTINUE HANDLER FOR 1062 
-    SELECT 'Errorea, gako hori sartuta dago Premium taulen barruan';
-    
-		SELECT IDBezeroa, mota, Aktiboa INTO v_IDBezeroa, v_mota, v_aktiboa
-		FROM bezeroa
-		WHERE IDBezeroa = NEW.IDBezeroa;
-        
-        IF v_mota = 'Premium' AND v_aktiboa = true then
-			INSERT INTO premium VALUES (v_IDBezeroa, date_add(curdate(),  interval 1 year));
-		END IF;
+    DECLARE v_IDBezeroa VARCHAR(32);
+    DECLARE v_mota ENUM('Premium', 'Free');
+    DECLARE v_aktiboa TINYINT(1);
+    DECLARE CONTINUE HANDLER FOR 1062
+    BEGIN
+        -- Log the duplicate key error
+        INSERT INTO error_log (error_message, error_time)
+        VALUES ('Errorea, gako hori sartuta dago Premium taulen barruan', NOW());
+    END;
 
+    -- Get the new values from the inserted row
+    SET v_IDBezeroa = NEW.IDBezeroa;
+    SET v_mota = NEW.mota;
+    SET v_aktiboa = NEW.Aktiboa;
+
+    -- Check if the conditions are met and insert into the premium table
+    IF v_mota = 'Premium' AND v_aktiboa = TRUE THEN
+        INSERT INTO premium (IDBezeroa, Iraungitze_data)
+        VALUES (v_IDBezeroa, DATE_ADD(CURDATE(), INTERVAL 1 YEAR));
+    END IF;
 END;
 //
+
 
 -- Bezeroa bere kontua desaktibatzean, premium tauletik kendu
 DROP TRIGGER IF EXISTS PremiumTauletikKenduTrigger;
@@ -35,21 +42,24 @@ CREATE TRIGGER PremiumTauletikKenduTrigger
 AFTER UPDATE ON bezeroa
 FOR EACH ROW
 BEGIN
+    DECLARE v_IDBezeroa VARCHAR(32);
+    DECLARE v_mota ENUM('Premium','Free');
+    DECLARE v_aktiboa TINYINT(1);
 
-	DECLARE v_IDBezeroa varchar(32);
-	DECLARE v_mota enum('Premium','Free');
-    DECLARE v_aktiboa tinyint(1);
-    
-	DECLARE CONTINUE HANDLER FOR 1451
-	SELECT 'Ezin da datua aldatu edo ezabatu gakoaren murrizketak huts egiten duelako';
-    
-		SELECT IDBezeroa, mota, Aktiboa INTO v_IDBezeroa, v_mota, v_aktiboa
-		FROM bezeroa
-		WHERE IDBezeroa = NEW.IDBezeroa;
-        
-		IF v_mota = 'Premium' AND v_aktiboa = false then
-			DELETE FROM premium WHERE IDBezeroa = v_IDBezeroa;
-		END IF;
+    DECLARE CONTINUE HANDLER FOR 1451
+    BEGIN
+        -- Handle foreign key constraint error
+        INSERT INTO error_log (error_message, error_time)
+        VALUES ('Ezin da datua aldatu edo ezabatu gakoaren murrizketak huts egiten duelako', NOW());
+    END;
+
+    SET v_IDBezeroa = NEW.IDBezeroa;
+    SET v_mota = NEW.mota;
+    SET v_aktiboa = NEW.Aktiboa;
+
+    IF v_mota = 'Premium' AND v_aktiboa = 0 THEN
+        DELETE FROM premium WHERE IDBezeroa = v_IDBezeroa;
+    END IF;
 END;
 //
 
@@ -60,22 +70,24 @@ CREATE TRIGGER PremiumTauletanSartu
 AFTER UPDATE ON bezeroa
 FOR EACH ROW
 BEGIN
+    DECLARE v_IDBezeroa VARCHAR(32);
+    DECLARE v_mota ENUM('Premium','Free');
+    DECLARE v_aktiboa TINYINT(1);
 
-	DECLARE v_IDBezeroa varchar(32);
-	DECLARE v_mota enum('Premium','Free');
-	DECLARE v_aktiboa tinyint(1);
-    
-	DECLARE CONTINUE HANDLER FOR 1062 
-    SELECT 'Errorea, gako hori sartuta dago Premium taulen barruan';
-    
-		SELECT IDBezeroa, mota, Aktiboa INTO v_IDBezeroa, v_mota, v_aktiboa
-		FROM bezeroa
-		WHERE IDBezeroa = NEW.IDBezeroa;
-        
-		IF v_mota = 'Premium' AND v_aktiboa = true AND OLD.mota ='Free' THEN
-				INSERT INTO premium VALUES (v_IDBezeroa, date_add(curdate(),  interval 1 year));
-		END IF;
-        
+    DECLARE CONTINUE HANDLER FOR 1062 
+    BEGIN
+        -- Handle duplicate key error
+        INSERT INTO error_log (error_message, error_time)
+        VALUES ('Errorea, gako hori sartuta dago Premium taulen barruan', NOW());
+    END;
+
+    SET v_IDBezeroa = NEW.IDBezeroa;
+    SET v_mota = NEW.mota;
+    SET v_aktiboa = NEW.Aktiboa;
+
+    IF v_mota = 'Premium' AND v_aktiboa = 1 AND OLD.mota = 'Free' THEN
+        INSERT INTO premium (IDBezeroa, ExpirationDate) VALUES (v_IDBezeroa, DATE_ADD(CURDATE(), INTERVAL 1 YEAR));
+    END IF;
 END;
 //
 
@@ -91,8 +103,7 @@ BEGIN
 	DECLARE v_IDBezeroa varchar(32);
 	DECLARE amaiera bool default 0;
     
-	DECLARE CONTINUE HANDLER FOR 1062 
-    SELECT 'Errorea, erabiltzaile hori sartuta dago MezuaErabiltzaileak taulen barruan';
+	
     
 	DECLARE c CURSOR FOR
 	SELECT Iraungitze_data, IDBezeroa
@@ -122,24 +133,20 @@ BEGIN
 
 	DECLARE v_IDBezeroa varchar(32);
 	DECLARE amaiera bool default 0;
-
-	DECLARE CONTINUE HANDLER FOR 1451
-	SELECT 'Ezin da datua aldatu edo ezabatu gakoaren murrizketak huts egiten duelako';
-
+	#DECLARE CONTINUE HANDLER FOR 1451
+	#SELECT 'Ezin da datua aldatu edo ezabatu gakoaren murrizketak huts egiten duelako';
 	DECLARE c CURSOR FOR
-	SELECT IDBezeroa 
-	FROM premium
-	WHERE Iraungitze_data < date_add(curdate(), interval 2 day);
-
+		SELECT IDBezeroa 
+		FROM premium
+		WHERE Iraungitze_data < date_add(curdate(), interval 2 day);
 	DECLARE CONTINUE HANDLER FOR NOT FOUND
-	SET amaiera = 1;
     OPEN c;
-    
-	WHILE amaiera = 0 DO
-		FETCH c INTO v_IDBezeroa;
-			DELETE FROM premium WHERE IDBezeroa = v_IDBezeroa;
-			DELETE FROM MezuaErabiltzaileak WHERE IDBezeroa = v_IDBezeroa;
-    END WHILE;
+	SET amaiera = 1;
+		WHILE amaiera = 0 DO
+			FETCH c INTO v_IDBezeroa;
+				DELETE FROM premium WHERE IDBezeroa = v_IDBezeroa;
+				DELETE FROM MezuaErabiltzaileak WHERE IDBezeroa = v_IDBezeroa;
+		END WHILE;
     CLOSE c;
 end;
 $$
@@ -178,8 +185,7 @@ DROP EVENT IF EXISTS estatistikakEguneroGustukoakGertaera;
 DELIMITER //
 -- Egunean behin egiten den gertaera, eguneroGustoko estatistika betetzeko.
 CREATE EVENT estatistikakEguneroGustukoakGertaera
-ON SCHEDULE
-    EVERY 1 DAY
+ON SCHEDULE EVERY 1 DAY
 DO
 BEGIN
     CALL estatistikakEguneroGustukoak();
@@ -359,6 +365,10 @@ BEGIN
     END IF;
 END;
 //
+
+
+
+
 
 
 
