@@ -17,7 +17,7 @@ BEGIN
     DECLARE CONTINUE HANDLER FOR 1062
     BEGIN
         -- Log the duplicate key error
-        INSERT INTO error_log (error_message, error_time)
+        INSERT INTO error_log (error_mezua, error_denbora)
         VALUES ('Errorea, gako hori sartuta dago Premium taulen barruan', NOW());
     END;
 
@@ -49,7 +49,7 @@ BEGIN
     DECLARE CONTINUE HANDLER FOR 1451
     BEGIN
         -- Handle foreign key constraint error
-        INSERT INTO error_log (error_message, error_time)
+        INSERT INTO error_log (error_mezua, error_denbora)
         VALUES ('Ezin da datua aldatu edo ezabatu gakoaren murrizketak huts egiten duelako', NOW());
     END;
 
@@ -77,7 +77,7 @@ BEGIN
     DECLARE CONTINUE HANDLER FOR 1062 
     BEGIN
         -- Handle duplicate key error
-        INSERT INTO error_log (error_message, error_time)
+        INSERT INTO error_log (error_mezua, error_denbora)
         VALUES ('Errorea, gako hori sartuta dago Premium taulen barruan', NOW());
     END;
 
@@ -102,8 +102,6 @@ BEGIN
 	DECLARE v_IraungitzeData date;
 	DECLARE v_IDBezeroa varchar(32);
 	DECLARE amaiera bool default 0;
-    
-	
     
 	DECLARE c CURSOR FOR
 	SELECT Iraungitze_data, IDBezeroa

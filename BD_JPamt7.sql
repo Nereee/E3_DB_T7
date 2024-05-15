@@ -126,7 +126,7 @@ CREATE TABLE erreprodukzioak(
     erreprodukzio_data time not null,
 	Primary key (IDerreprodukzioak),
     Constraint IDBezeroa_fk4 foreign key(IDBezeroa) references bezeroa (IDBezeroa) ON UPDATE CASCADE,
-    Constraint IdAudio_fk5 foreign key(IdAudio) references audio (IdAudio) ON UPDATE CASCADE
+    Constraint IdAudio_fk5 foreign key(IdAudio) references audio (IdAudio) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE estatistikakEgunero (
@@ -136,7 +136,7 @@ CREATE TABLE estatistikakEgunero (
     GustokoPodcast int,
     TopEntzundakoak int,
 	primary key(eguna,IDAudio),
-    foreign key (IDAudio) references audio (IdAudio)
+    foreign key (IDAudio) references audio (IdAudio) ON DELETE CASCADE
 );
 
 CREATE TABLE estatistikakAstean (
@@ -146,7 +146,7 @@ CREATE TABLE estatistikakAstean (
     GustokoPodcast int,
     TopEntzundakoak int,
 	primary key(IDEstastean),
-    foreign key (IDAudio) references audio (IdAudio)
+    foreign key (IDAudio) references audio (IdAudio) ON DELETE CASCADE
 );
 
 CREATE TABLE estatistikakHilabetean (
@@ -156,7 +156,7 @@ CREATE TABLE estatistikakHilabetean (
     GustokoPodcast int,
     TopEntzundakoak int,
     primary key (IDEsthilabetean),
-    foreign key (IDAudio) references audio (IdAudio)
+    foreign key (IDAudio) references audio (IdAudio) ON DELETE CASCADE
 );
 
 CREATE TABLE estatistikakUrtean (
@@ -166,7 +166,7 @@ CREATE TABLE estatistikakUrtean (
     GustokoPodcast int,
     TopEntzundakoak int,
     primary key (IDEsturtean),
-    foreign key (IDAudio) references audio (IdAudio)
+    foreign key (IDAudio) references audio (IdAudio) ON DELETE CASCADE
 );
 
 CREATE TABLE estatistikakTotalak (
@@ -176,12 +176,12 @@ CREATE TABLE estatistikakTotalak (
     GustokoPodcast int,
     TopEntzundakoak int,
     primary key (IDEsttotala),
-    foreign key (IDAudio) references audio (IdAudio)
+    foreign key (IDAudio) references audio (IdAudio) ON DELETE CASCADE
 );
 CREATE TABLE error_log (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    error_message VARCHAR(255),
-    error_time DATETIME
+    error_mezua VARCHAR(255),
+    error_denbora DATETIME
 );
 -- ----------------------------------------------------------------------------------- Indixeak -----------------------------------------------------------------------------------
 
