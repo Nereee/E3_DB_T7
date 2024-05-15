@@ -250,9 +250,9 @@ SELECT IzenArtistikoa AS Podcaster, SUM(es.TopEntzundakoak) AS Totala
 --  Musikariaren arabera, abestiak atera.
 CREATE OR REPLACE VIEW musikari_abestiak
 AS
-SELECT IdAudio, Izena, Iraupena, count(IdAudio) 
-	FROM audio a RIGHT JOIN abestia USING (IdAudio) 
-		RIGHT JOIN album USING (IdAlbum) 
+SELECT IdAudio, Izena, Iraupena, count(IdAudio), Izenburua
+	FROM audio a  JOIN abestia USING (IdAudio) 
+		 JOIN album USING (IdAlbum) 
 	GROUP BY 1,2,3;
     
 -- Playlist izena, id-a, horietako bezeroa eta zenbat abesti daukan.
@@ -284,4 +284,11 @@ SELECT play.Izenburua, play.IDList, count(pb.IdAudio) as Kopurua
 	GROUP BY 1,2
 ORDER BY 3 DESC;
 
+CREATE OR REPLACE VIEW ArtistenAbestiak 
+AS
+SELECT Izenburua,  year(Urtea) as urtea, count(IdAudio) AS kapazitatea, Generoa, IzenArtistikoa FROM  album al 
+						LEFT JOIN abestia ab USING (IdAlbum) 
+                        JOIN musikaria m USING (IDMusikaria) 
+                        where IzenArtistikoa = "Rosalía"
+                        group by 1, 2, 4;
 
