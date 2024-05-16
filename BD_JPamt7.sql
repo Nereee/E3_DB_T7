@@ -287,6 +287,7 @@ SELECT play.Izenburua, play.IDList, count(pb.IdAudio) as Kopurua
 	GROUP BY 1,2
 ORDER BY 3 DESC;
 
+-- Artista bakoitzaren Albumen abestiak
 CREATE OR REPLACE VIEW ArtistenAbestiak 
 AS
 SELECT Izenburua,  year(Urtea) as urtea, count(IdAudio) AS kapazitatea, Generoa, IzenArtistikoa FROM  album al 
