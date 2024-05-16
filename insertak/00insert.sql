@@ -22,7 +22,7 @@ INSERT INTO hizkuntza (IdHizkuntza, Deskribapena) VALUES
 ('EN', 'English'),
 ('FR', 'Français'),
 ('DE', 'Deutsch'),
-('CA', 'Català'),
+('CA', 'Catala'),
 ('GA', 'Gaeilge'),
 ('AR', 'العربية');
 
@@ -34,11 +34,5 @@ VALUES
 ("analopez&", 'Ana', 'López', 'FR', 'analopez', '123456', '1995-11-30', '2023-03-05', 'Premium', true),
 ("davidmartinez&", 'David', 'Martínez', 'DE', 'davidmartinez', 'abc123', '1985-03-25', '2023-03-08', 'Free', true),
 ("elenafdez&", 'Elena', 'Fernández', 'ES', 'elenafdez', 'qwerty', '1992-07-10', '2023-03-12', 'Premium', false),
-("admin&", 'admin', 'admin', 'EU', 'admin', '12345', '1992-08-20', '2021-06-17', 'Free', false);
-
--- PREMIUM
-INSERT INTO premium (IDBezeroa, Iraungitze_data)
-VALUES
-('juanperez&', '2025-05-31'),
-('analopez&', '2025-04-30'),
-('mariagonzalez&', '2025-06-30');
+("admin&", 'admin', 'admin', 'EU', 'admin', '12345', '1992-08-20', '2021-06-17', 'Free', false),
+("a&", 'a', 'admin', 'EU', 'a', 'a', '1992-08-20', '2021-06-17', 'Premium', false);
