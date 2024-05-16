@@ -120,38 +120,40 @@ CREATE TABLE gustukoak(
 );
 
 CREATE TABLE erreprodukzioak(
-	IDerreprodukzioak int auto_increment,
-	IDBezeroa varchar(32),
-	IdAudio int,
+    IDerreprodukzioak int auto_increment,
+    IDBezeroa varchar(32),
+    IdAudio int,
     erreprodukzio_data time not null,
-	Primary key (IDerreprodukzioak),
+    Primary key (IDerreprodukzioak),
     Constraint IDBezeroa_fk4 foreign key(IDBezeroa) references bezeroa (IDBezeroa) ON UPDATE CASCADE,
     Constraint IdAudio_fk5 foreign key(IdAudio) references audio (IdAudio) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE estatistikakEgunero (
     IdAudio int,
-    eguna date ,
+    eguna date,
     GustokoAbestiak int,
     GustokoPodcast int,
     TopEntzundakoak int,
-	primary key(eguna,IDAudio),
+    primary key(eguna,IDAudio),
     foreign key (IDAudio) references audio (IdAudio) ON DELETE CASCADE
 );
 
 CREATE TABLE estatistikakAstean (
     IdAudio int,
     IDEstastean int auto_increment,
+    eguna date,
     GustokoAbestiak int,
     GustokoPodcast int,
     TopEntzundakoak int,
-	primary key(IDEstastean),
+    primary key(IDEstastean),
     foreign key (IDAudio) references audio (IdAudio) ON DELETE CASCADE
 );
 
 CREATE TABLE estatistikakHilabetean (
     IdAudio int,
     IDEsthilabetean int auto_increment,
+    eguna date,
     GustokoAbestiak int,
     GustokoPodcast int,
     TopEntzundakoak int,
@@ -162,6 +164,7 @@ CREATE TABLE estatistikakHilabetean (
 CREATE TABLE estatistikakUrtean (
     IdAudio int,
     IDEsturtean int auto_increment,
+    eguna date,
     GustokoAbestiak int,
     GustokoPodcast int,
     TopEntzundakoak int,
